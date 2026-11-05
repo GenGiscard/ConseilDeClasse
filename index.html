@@ -168,6 +168,10 @@ pre.out{white-space:pre-wrap;word-break:break-word;background:var(--soft);border
 .dropzone > div{display:grid;gap:6px;text-align:center;background:var(--card);color:var(--ink);border:3px dashed var(--accent);border-radius:16px;padding:40px 32px;max-width:520px;width:100%}
 .dropzone b{font-family:var(--f-display);font-size:22px}
 .dropzone span{color:var(--muted)}
+.cc.over{color:var(--comp2);font-weight:700}
+.ed-help{display:grid;gap:8px;border:1px solid var(--accent);border-radius:8px;padding:12px 14px;background:var(--card)}
+.ed-help ol{margin:0;padding-left:20px;display:grid;gap:4px}
+.ed-help .warn{margin:0;color:var(--comp2);font-weight:700}
 /* Appréciations */
 .gen-bar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;background:var(--soft);border-radius:8px;padding:10px 12px}
 .gen-bar > div:first-child{display:grid}
@@ -812,7 +816,16 @@ function viewTechno(b){
       <button class="btn small" data-act="view" data-v="data">Modifier la banque</button>
     </div>
     <div class="panel"><div class="toolbar" style="justify-content:space-between"><h2>${esc(state.cur.cls)} · ${done} / ${list.length} rédigées</h2>
-      <button class="btn" data-act="copy-all-app">Copier toutes les appréciations</button></div>
+      <div class="toolbar"><button class="btn" data-act="copy-all-app">Copier toutes les appréciations</button><button class="btn primary" data-act="ed-script">Remplir École Directe</button></div></div>
+      ${ui.edHelp ? `<div class="ed-help"><div class="toolbar" style="justify-content:space-between"><b>Le script de la ${esc(state.cur.cls)} est copié</b><button class="btn small" data-act="ed-close">Fermer</button></div>
+        <ol>
+          <li>Dans École Directe, ouvre <b>Carnet de notes</b>, ${esc(edLabel(state.cur.cls))}, ${esc(triLabel(state.cur.tri))}, onglet <b>Appréciations</b>.</li>
+          <li>Appuie sur <b>F12</b>, puis ouvre l\u2019onglet <b>Console</b>.</li>
+          <li>Colle avec <b>Ctrl+V</b> puis appuie sur <b>Entrée</b>. La première fois, le navigateur demande de taper <b>autoriser le collage</b> (ou <b>allow pasting</b>) avant de recoller.</li>
+          <li>Vérifie les cases surlignées en vert, puis clique sur la <b>disquette</b> d\u2019École Directe pour enregistrer.</li>
+        </ol>
+        ${ui.edOver ? `<p class="warn">${ui.edOver} appréciation${ui.edOver>1?"s dépassent":" dépasse"} 200 caractères : raccourcis-la avant, sinon École Directe risque de la couper.</p>` : ""}
+      </div>` : ""}
       <div class="gen-bar">
         <div><b>Rédaction automatique</b><span class="hint">Note de techno + curseur bavardages et distractions de chaque élève.</span></div>
         <div class="toolbar"><button class="btn primary" data-act="gen-apps">Rédiger les appréciations vides</button>
@@ -825,7 +838,7 @@ function viewTechno(b){
             <span class="bav-val lvl-${bavOf(s)}" id="bl-${s.id}">${BAV_LABELS[bavOf(s)]}</span></label></div>
         <div><label class="label" for="tn-${s.id}">Note</label><input type="number" step="0.01" min="0" max="20" id="tn-${s.id}" data-sfield="techno" data-id="${s.id}" value="${s.techno??""}" style="width:100%"></div>
         <div><textarea id="ta-${s.id}" data-sfield="appTechno" data-id="${s.id}" aria-label="Appréciation de ${esc(full(s))}">${esc(s.appTechno)}</textarea>
-          <div class="app-meta"><span id="cc-${s.id}">${s.appTechno.length} caractères</span><span class="toolbar"><button class="btn small" data-act="gen-one" data-id="${s.id}"${s.techno==null?' disabled title="Saisissez d\u2019abord la note"':""}>${s.appTechno.trim()?"Autre version":"Rédiger"}</button><button class="btn small" data-act="copy-app" data-id="${s.id}">Copier</button></span></div></div>
+          <div class="app-meta"><span id="cc-${s.id}" class="cc${s.appTechno.length>APP_LIMIT?" over":""}">${ccText(s.appTechno)}</span><span class="toolbar"><button class="btn small" data-act="gen-one" data-id="${s.id}"${s.techno==null?' disabled title="Saisissez d\u2019abord la note"':""}>${s.appTechno.trim()?"Autre version":"Rédiger"}</button><button class="btn small" data-act="copy-app" data-id="${s.id}">Copier</button></span></div></div>
       </div>`).join("")}</div>
     </div></div>`;
 }
@@ -938,15 +951,28 @@ function pickVariant(pool, counts, avoid){
   const best = ids.filter(i=>c(i)===min);
   return best[Math.floor(Math.random()*best.length)];
 }
+const APP_LIMIT = 200;
 function generateApp(s, used, other){
-  const keys = genKeys(s), f = nameForms(s.prenom);
+  const keys = genKeys(s), f = nameForms(s.prenom), pools = keys.map(genPool);
   const sameKeys = other && s.appKeys && s.appKeys.join()===keys.join();
-  const idx = keys.map((k,i)=>pickVariant(genPool(k), used[k], sameKeys ? s.appIdx[i] : null));
-  keys.forEach((k,i)=>{ used[k] = used[k] || {}; used[k][idx[i]] = (used[k][idx[i]]||0) + 1; });
-  const text = keys.map((k,i)=>genPool(k)[idx[i]]).join(" ").replace(/\{P\}/g, f.P).replace(/\{deP\}/g, f.deP);
-  s.appTechno = text; s.appAuto = text; s.appKeys = keys; s.appIdx = idx;
-  return text;
+  const fill = t => t.replace(/\{P\}/g, f.P).replace(/\{deP\}/g, f.deP);
+  const combos = [];
+  pools[0].forEach((_,i)=>pools[1].forEach((_,j)=>pools[2].forEach((_,k)=>{
+    const idx = [i,j,k], text = idx.map((x,n)=>fill(pools[n][x])).join(" ");
+    let score = idx.reduce((sum,x,n)=>sum + (((used[keys[n]]||{})[x])||0), 0);
+    if(sameKeys) score += idx.filter((x,n)=>x===s.appIdx[n]).length * 100;
+    combos.push({idx, text, score});
+  })));
+  let ok = combos.filter(c=>c.text.length<=APP_LIMIT);
+  if(!ok.length){ const m = Math.min(...combos.map(c=>c.text.length)); ok = combos.filter(c=>c.text.length===m); }
+  const min = Math.min(...ok.map(c=>c.score)), best = ok.filter(c=>c.score===min);
+  const pick = best[Math.floor(Math.random()*best.length)];
+  keys.forEach((k,n)=>{ used[k] = used[k] || {}; used[k][pick.idx[n]] = (used[k][pick.idx[n]]||0) + 1; });
+  s.appTechno = pick.text; s.appAuto = pick.text; s.appKeys = keys; s.appIdx = pick.idx;
+  return pick.text;
 }
+function ccText(t){ return `${t.length} / ${APP_LIMIT}`; }
+function setCC(id, t){ const cc = document.getElementById("cc-"+id); if(cc){ cc.textContent = ccText(t); cc.classList.toggle("over", t.length>APP_LIMIT); } }
 function generateMany(b, onlyEmpty){
   const used = usageMap(b, null);
   let n = 0, miss = 0;
@@ -960,7 +986,7 @@ function generateMany(b, onlyEmpty){
 }
 function refreshAppRow(s){
   const ta = document.getElementById("ta-"+s.id); if(ta) ta.value = s.appTechno;
-  const cc = document.getElementById("cc-"+s.id); if(cc) cc.textContent = s.appTechno.length+" caractères";
+  setCC(s.id, s.appTechno);
 }
 
 /* ---------- Synchronisation chiffrée (Firebase REST, sans SDK ni clé API) ---------- */
@@ -1107,6 +1133,53 @@ function syncPanel(){
       <p class="hint">Chaque modification est chiffrée puis envoyée automatiquement. Sur un autre appareil, activez la synchronisation avec la même phrase.</p>
       <div class="toolbar"><button class="btn" data-act="sync-now">Synchroniser maintenant</button>${askBtn("sync-off","Désactiver sur cet appareil","Oublier la phrase sur cet appareil ? Les données restent ici et dans la base.","btn")}</div>
     </div>`;
+}
+
+/* ---------- Transfert vers École Directe ---------- */
+const ED_LEVELS = {"6":"SIXIEME","5":"CINQUIEME","4":"QUATRIEME","3":"TROISIEME"};
+function edLabel(c){ return c==="3PM" ? "TROISIEME PREPA METIERS" : (ED_LEVELS[c[0]]||c[0]) + " " + c.slice(1); }
+/* Script autonome à coller dans la console de la page Appréciations d'École Directe.
+   Il associe chaque zone de saisie au nom de l'élève sur sa ligne, remplit sans enregistrer, et laisse vérifier. */
+function edScript(items){
+  const data = items.map(x=>({n:x.nom+" "+x.prenom, k:norm(x.nom+x.prenom).replace(/[^a-z0-9]/g,""), t:x.appTechno.trim()}));
+  const cls = edLabel(state.cur.cls);
+  return `/* Conseils de classe - appréciations ${state.cur.cls} ${state.cur.tri} - remplit sans enregistrer */
+(function(){
+var CLASSE = ${JSON.stringify(cls)};
+var ECRASER = false; /* true : remplace aussi les appréciations déjà saisies */
+var DATA = ${JSON.stringify(data)};
+var K = function(s){ return String(s||"").normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,""); };
+var T = function(e){ return e.innerText || e.textContent || ""; };
+var page = K(T(document.body));
+if(page.indexOf(K(CLASSE))<0 && !confirm("La page ne semble pas afficher la classe " + CLASSE + ". Continuer quand même ?")) return;
+var setVal = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, "value").set;
+var tas = Array.prototype.slice.call(document.querySelectorAll("textarea"));
+var used = {}, filled = 0, kept = 0, noRow = 0;
+tas.forEach(function(ta){
+  var el = ta, hit = null;
+  while(el && el !== document.body && !hit){
+    el = el.parentElement;
+    if(!el || el.querySelectorAll("textarea").length > 1) break;
+    var txt = K(T(el)), best = null;
+    DATA.forEach(function(d){ if(!used[d.k] && txt.indexOf(d.k) >= 0 && (!best || d.k.length > best.k.length)) best = d; });
+    hit = best;
+  }
+  if(!hit){ noRow++; return; }
+  used[hit.k] = true;
+  if(ta.value.trim() && ta.value.trim() !== hit.t && !ECRASER){ kept++; ta.style.outline = "3px solid #e0a000"; return; }
+  ta.focus();
+  setVal.call(ta, hit.t);
+  ["input","change","keyup","blur"].forEach(function(t){ ta.dispatchEvent(new Event(t, {bubbles:true})); });
+  ta.style.outline = "3px solid #2f9e5a";
+  filled++;
+});
+var missing = DATA.filter(function(d){ return !used[d.k]; }).map(function(d){ return d.n; });
+var msg = filled + " appréciation(s) remplie(s)." +
+  (kept ? "\\n" + kept + " déjà saisie(s), laissée(s) telle(s) quelle(s) (encadrée(s) en orange)." : "") +
+  (missing.length ? "\\nÉlèves non trouvés sur la page : " + missing.join(", ") : "") +
+  "\\n\\nVérifiez puis cliquez sur la disquette pour enregistrer.";
+console.log(msg); alert(msg);
+})();`;
 }
 
 /* ---------- Données ---------- */
@@ -1469,7 +1542,7 @@ function act(el){
       s.appTechno = (s.appTechno.trim() ? s.appTechno.trim()+" " : "") + phrase;
       const ta = document.getElementById("ta-"+s.id);
       if(ta){ ta.value = s.appTechno; ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
-      const cc = document.getElementById("cc-"+s.id); if(cc) cc.textContent = s.appTechno.length+" caractères";
+      setCC(s.id, s.appTechno);
       save(); break; }
     case "sync-connect": {
       const f = document.getElementById("syncPass"), pass = f ? f.value : "";
@@ -1489,6 +1562,14 @@ function act(el){
       generateApp(s, usageMap(b, s), true); refreshAppRow(s);
       el.textContent = "Autre version"; ui.lastApp = s.id; save(); break; }
     case "copy-app": { const s = findStudent(id); if(s) copyText(s.appTechno, "Appréciation de "+full(s)); break; }
+    case "ed-script": {
+      const items = sorted(b.students,"nom").filter(x=>x.appTechno.trim());
+      if(!items.length){ toast("Aucune appréciation à transférer"); break; }
+      const over = items.filter(x=>x.appTechno.length>APP_LIMIT).length;
+      copyText(edScript(items), "Script École Directe");
+      ui.edHelp = true; ui.edOver = over; render();
+      break; }
+    case "ed-close": ui.edHelp = false; render(); break;
     case "copy-all-app": copyText(sorted(b.students,"nom").map(s=>`${s.nom}\t${s.prenom}\t${fmt(s.techno)}\t${s.appTechno.replace(/[\t\r\n]+/g," ")}`).join("\n"), "Appréciations techno"); break;
     case "import-csv": {
       const fs = document.getElementById("csvFile").files, p = document.getElementById("csvPaste").value;
@@ -1566,7 +1647,7 @@ document.addEventListener("input", e=>{
       if(bl){ bl.textContent = BAV_LABELS[v]; bl.className = "bav-val lvl-"+v; }
       t.className = "lvl-"+v;
     }
-    if(f==="appTechno"){ const cc = document.getElementById("cc-"+s.id); if(cc) cc.textContent = t.value.length+" caractères"; }
+    if(f==="appTechno") setCC(s.id, t.value);
     if(f==="notes"){
       const tl = document.getElementById("tasks-"+s.id); if(tl) tl.innerHTML = taskItems(s, key(state.cur.cls,state.cur.tri));
       const nl = document.getElementById("ns-"+s.id); if(nl) nl.innerHTML = noteLine(s);
