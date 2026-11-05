@@ -161,6 +161,13 @@ pre.out{white-space:pre-wrap;word-break:break-word;background:var(--soft);border
 .sync-pill[data-st="run"]{background:var(--soft);color:var(--accent)}
 .sync-pill[data-st="wait"]{background:var(--fel-bg);color:var(--fel);border-color:transparent}
 .sync-pill[data-st="err"]{background:var(--comp2-bg);color:var(--comp2);border-color:transparent}
+.dropbox{display:grid;gap:2px;border:2px dashed var(--line);border-radius:10px;padding:16px;text-align:center;cursor:pointer;background:var(--soft)}
+.dropbox:hover{border-color:var(--accent)}
+.dropbox span{font-size:13px;color:var(--muted)}
+.dropzone{position:fixed;inset:0;z-index:70;display:grid;place-items:center;padding:16px;background:rgba(35,64,168,.18);pointer-events:none}
+.dropzone > div{display:grid;gap:6px;text-align:center;background:var(--card);color:var(--ink);border:3px dashed var(--accent);border-radius:16px;padding:40px 32px;max-width:520px;width:100%}
+.dropzone b{font-family:var(--f-display);font-size:22px}
+.dropzone span{color:var(--muted)}
 /* Appréciations */
 .gen-bar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;background:var(--soft);border-radius:8px;padding:10px 12px}
 .gen-bar > div:first-child{display:grid}
@@ -214,6 +221,7 @@ pre.out{white-space:pre-wrap;word-break:break-word;background:var(--soft);border
 </header>
 <main id="main"></main>
 <div id="toast" class="toast" hidden></div>
+<div id="dropzone" class="dropzone" hidden><div><b>Déposez le fichier Pronote</b><span>Classe et trimestre seront reconnus automatiquement</span></div></div>
 <div id="modal" class="modal" hidden></div>
 
 <script>
@@ -426,7 +434,7 @@ function statStrip(b){
 }
 function emptyState(){
   return `<div class="panel empty"><h2>Aucun élève en ${esc(state.cur.cls)} pour le ${esc(triLabel(state.cur.tri))}</h2>
-    <p>Importez un export CSV (Pronote ou tableur) ou ajoutez les élèves un par un.</p>
+    <p>Glissez un fichier Pronote (.xlsx) n\u2019importe où sur la page : la classe et le trimestre sont reconnus tout seuls.</p>
     <div class="toolbar" style="justify-content:center"><button class="btn primary" data-act="view" data-v="data">Importer une liste</button><button class="btn" data-act="add-student">Ajouter un élève</button></div></div>`;
 }
 function mentionSeg(s, big){
@@ -1112,7 +1120,8 @@ function viewData(b){
       <div class="toolbar"><label class="label" for="impCls">Vers</label>
         <select id="impCls">${CLASSES.map(c=>`<option${c===state.cur.cls?" selected":""}>${c}</option>`).join("")}</select>
         <select id="impTri" aria-label="Période">${triOpts(state.cur.tri)}</select></div>
-      <input type="file" id="csvFile" accept=".xlsx,.csv,.txt,.tsv" aria-label="Fichier Excel ou CSV">
+      <label class="dropbox" for="csvFile"><b>Glissez vos fichiers Pronote ici</b><span>ou n\u2019importe où sur la page, plusieurs à la fois si besoin. Classe et trimestre sont lus dans le fichier.</span></label>
+      <input type="file" id="csvFile" accept=".xlsx,.csv,.txt,.tsv" multiple aria-label="Fichier Excel ou CSV">
       <textarea id="csvPaste" placeholder="ou collez ici les lignes copiées depuis Pronote ou un tableur" aria-label="Coller les données"></textarea>
       <div class="radio"><label><input type="radio" name="impMode" value="merge" checked> Mettre à jour (garde les appréciations)</label><label><input type="radio" name="impMode" value="replace"> Remplacer la liste</label></div>
       <div class="toolbar"><button class="btn primary" data-act="import-csv">Importer</button><span class="hint" id="impMsg">${esc(ui.importMsg)}</span></div>
@@ -1191,6 +1200,12 @@ function rowsToStudents(rows){
       iTec = find(h=>h.startsWith("techno") || h==="tech"),
       iRang = find(h=>h.startsWith("rang"));
   if(iMoy<0) iMoy = find(h=>h.startsWith("moy"));
+  /* fiche de saisie Pronote d'une matière : « TROISIEME C / TECHNOLOGIE », colonnes Elèves | T1 | A | Appréciation */
+  const title = hasHeader ? norm(rows.slice(0,hi).map(r=>r.join(" ")).join(" ")) : "";
+  const iPer = find(h=>/^[ts][123]$/.test(h)), iApp = find(h=>h.startsWith("appreciation")), iAbs = find(h=>h==="a");
+  const subjectSheet = iPer>=0 && iApp>=0;
+  const technoSheet = subjectSheet && title.includes("technologie");
+  if(technoSheet && iTec<0) iTec = iPer;
   let data = hasHeader ? rows.slice(hi+1) : rows;
   if(!hasHeader){ iNom = 0; iPre = 1; iMoy = 2; }
   if(hasHeader && iNom<0 && iEl<0){
@@ -1204,7 +1219,7 @@ function rowsToStudents(rows){
     return !!v && !STOP_RE.test(norm(v));
   };
   data = data.filter(isStudent);
-  const used = new Set([iNom,iPre,iEl,iMoy,iTec,iRang].filter(i=>i>=0));
+  const used = new Set([iNom,iPre,iEl,iMoy,iTec,iRang,iPer,iApp,iAbs].filter(i=>i>=0));
   const matCols = hasHeader ? rows[hi].map((h,i)=>[h,i]).filter(([h,i])=>{
     const n = norm(h);
     return !used.has(i) && n && !n.startsWith("redoubl") && !n.includes("\n") && data.some(r=>parseNum(r[i])!=null);
@@ -1215,20 +1230,38 @@ function rowsToStudents(rows){
     else if(iEl>=0 && r[iEl]) { const s = splitEleve(r[iEl]); nom = s.nom; prenom = s.prenom; }
     if(!nom && !prenom) return null;
     const mat = {}; matCols.forEach(([h,i])=>{ const n = parseNum(r[i]); if(n!=null) mat[prettySubject(h)] = n; });
-    return newStudent({nom:nom.toUpperCase(), prenom, moy:iMoy>=0?parseNum(r[iMoy]):null, techno:iTec>=0?parseNum(r[iTec]):null, rang:iRang>=0?parseNum(r[iRang]):null, mat});
+    const st = newStudent({nom:nom.toUpperCase(), prenom, moy:iMoy>=0?parseNum(r[iMoy]):null, techno:iTec>=0?parseNum(r[iTec]):null, rang:iRang>=0?parseNum(r[iRang]):null, mat});
+    if(technoSheet && r[iApp]) st.appTechno = r[iApp];
+    return st;
   }).filter(Boolean);
   out.subjects = hasHeader ? rows[hi].map((h,i)=>[h,i]).filter(([h,i])=>{
     const n = norm(h);
     return !used.has(i) && n && !n.includes("\n") && !n.startsWith("redoubl") && (SUBJ_NAMES[n] || matCols.some(m=>m[1]===i));
   }).map(([h])=>prettySubject(h)).filter((v,i,a)=>a.indexOf(v)===i) : [];
+  if(subjectSheet) out.subjects = [];
+  out.kind = technoSheet ? "techno" : subjectSheet ? "matiere" : "recap";
   return out;
 }
 /* Pronote : « 5D - CINQUIEME D / 1er Trimestre » dans les premières lignes */
-function detectMeta(rows){
-  const txt = rows.slice(0,6).map(r=>Array.from(r||[]).join(" ")).join("\n");
-  const m = txt.match(/(?:^|\n|\s)(\d(?:PM|[A-Z]))\s*-\s/);
-  const t = txt.match(/([123])\s*(?:er|e|ème|eme)\s+trimestre/i);
-  return { cls: m && CLASSES.includes(m[1]) ? m[1] : null, tri: t ? "T"+t[1] : null };
+const LEVELS = {sixieme:"6", cinquieme:"5", quatrieme:"4", troisieme:"3"};
+function metaFrom(txt){
+  const raw = String(txt||"");
+  const n = norm(raw).replace(/[_]+/g," ");
+  let cls = null;
+  const m1 = raw.match(/(?:^|\s)([3-6](?:PM|[A-Z]))\s*-\s/);
+  if(m1 && CLASSES.includes(m1[1])) cls = m1[1];
+  if(!cls){
+    const m2 = n.match(/\b(sixieme|cinquieme|quatrieme|troisieme)[\s-]+(prepa[\s-]*metiers?|pm|[a-z])\b/);
+    if(m2){ const c = LEVELS[m2[1]] + (m2[2].length===1 ? m2[2].toUpperCase() : "PM"); if(CLASSES.includes(c)) cls = c; }
+  }
+  if(!cls){ const m3 = n.match(/\b([3-6])(?:e|eme)?[\s-]?(pm|[a-e])\b/); if(m3){ const c = m3[1]+m3[2].toUpperCase(); if(CLASSES.includes(c)) cls = c; } }
+  const t = n.match(/\b([123])\s*(?:er|e|eme)?\s+trimestre\b/) || n.match(/\btrimestre[\s-]*([123])\b/);
+  return { cls, tri: t ? "T"+t[1] : null };
+}
+function detectMeta(rows, fname){
+  const head = metaFrom(rows.slice(0,6).map(r=>Array.from(r||[]).join(" ")).join("\n"));
+  const file = metaFrom(String(fname||"").replace(/\.[a-z]+$/i,"").replace(/[_-]+/g," "));
+  return { cls: head.cls || file.cls, tri: head.tri || file.tri };
 }
 
 /* ---------- lecture .xlsx sans bibliothèque (zip + XML) ---------- */
@@ -1295,14 +1328,25 @@ async function readXlsx(buf){
   return Array.from(rows, r=>r||[]);
 }
 
-function doImport(text){ doImportRows(parseCSV(text)); }
-function doImportRows(rows, meta){
-  if(meta && meta.cls){ document.getElementById("impCls").value = meta.cls; }
-  if(meta && meta.tri){ document.getElementById("impTri").value = meta.tri; }
-  const cls = document.getElementById("impCls").value, tri = document.getElementById("impTri").value;
-  const mode = (document.querySelector('input[name="impMode"]:checked')||{}).value || "merge";
+function doImport(text, fname){ const rows = parseCSV(text); return doImportRows(rows, detectMeta(rows, fname), {fname}); }
+/* opts.strict : ne pas se rabattre sur les menus de l'onglet Données (glisser-déposer) ; opts.quiet : pas de rendu ni de toast */
+function doImportRows(rows, meta, opts){
+  opts = opts || {}; meta = meta || {};
+  const selC = document.getElementById("impCls"), selT = document.getElementById("impTri");
+  const cls = meta.cls || (!opts.strict && selC ? selC.value : null);
+  const tri = meta.tri || (!opts.strict && selT ? selT.value : null);
+  const fname = opts.fname || "Fichier";
+  if(!cls || !tri){
+    ui.dropRows = {rows, fname, meta};
+    state.cur.view = "data";
+    ui.importMsg = `${fname} : ${!cls && !tri ? "classe et trimestre non reconnus" : !cls ? "classe non reconnue" : "trimestre non reconnu"}. Choisissez-les ci-dessous puis cliquez sur Importer.`;
+    if(!opts.quiet){ render(); if(meta.cls && selC) selC.value = meta.cls; if(meta.tri && selT) selT.value = meta.tri; }
+    return {ok:false, msg:ui.importMsg};
+  }
+  ui.dropRows = null;
+  const mode = opts.strict ? "merge" : ((document.querySelector('input[name="impMode"]:checked')||{}).value || "merge");
   const list = rowsToStudents(rows);
-  if(!list.length){ ui.importMsg = "Aucun élève reconnu. Vérifiez la ligne d’en-tête (Nom, Prénom, Moyenne)."; render(); return; }
+  if(!list.length){ ui.importMsg = `${fname} : aucun élève reconnu.`; if(!opts.quiet) render(); return {ok:false, msg:ui.importMsg}; }
   const b = book(cls,tri);
   if(b.example){ b.students = []; b.example = false; b.bilan = ""; }
   let added = 0, updated = 0;
@@ -1311,14 +1355,54 @@ function doImportRows(rows, meta){
     const idx = new Map(b.students.map(s=>[norm(full(s)), s]));
     list.forEach(n=>{
       const o = idx.get(norm(full(n)));
-      if(o){ if(n.moy!=null) o.moy = n.moy; if(n.rang!=null) o.rang = n.rang; if(n.techno!=null) o.techno = n.techno; if(Object.keys(n.mat).length) o.mat = n.mat; updated++; }
+      if(o){ if(n.moy!=null) o.moy = n.moy; if(n.rang!=null) o.rang = n.rang; if(n.techno!=null) o.techno = n.techno; if(Object.keys(n.mat).length) o.mat = n.mat;
+        if(n.appTechno && !o.appTechno.trim()) o.appTechno = n.appTechno; updated++; }
       else { b.students.push(n); added++; }
     });
   }
   if(list.subjects && list.subjects.length)b.subjects = list.subjects;
   state.cur.cls = cls; state.cur.tri = tri;
-  ui.importMsg = `${cls} · ${tri} : ${added} ajouté${added>1?"s":""}, ${updated} mis à jour.`;
+  const what = list.kind==="techno" ? "notes de techno" : list.kind==="matiere" ? "liste" : "moyennes";
+  ui.importMsg = `${cls} · ${triLabel(tri)} (${what}) : ${added} ajouté${added>1?"s":""}, ${updated} mis à jour.`;
+  save();
+  if(!opts.quiet){ render(); toast(ui.importMsg); }
+  return {ok:true, msg:ui.importMsg, cls, tri, kind:list.kind};
+}
+async function readAnyFile(f){
+  if(/\.xlsx$/i.test(f.name)) return readXlsx(await f.arrayBuffer());
+  if(/\.(csv|txt|tsv)$/i.test(f.name)) return parseCSV(await f.text());
+  throw new Error("type");
+}
+async function importFiles(files){
+  const list = Array.from(files||[]);
+  if(!list.length) return;
+  const done = [], fails = [];
+  let pending = null;
+  for(const f of list){
+    let rows;
+    try{ rows = await readAnyFile(f); }
+    catch(e){ fails.push(f.name + (e.message==="type" ? " (format non pris en charge)" : " (lecture impossible)")); continue; }
+    const r = doImportRows(rows, detectMeta(rows, f.name), {strict:true, quiet:true, fname:f.name});
+    if(r.ok) done.push(r); else if(ui.dropRows) pending = ui.dropRows; else fails.push(r.msg);
+  }
+  if(pending) ui.dropRows = pending;
+  if(done.length && !pending){
+    const last = done[done.length-1];
+    state.cur.cls = last.cls; state.cur.tri = last.tri;
+    if(last.kind==="techno") state.cur.view = "techno";
+    else if(state.cur.view==="data") state.cur.view = "prep";
+  }
+  ui.importMsg = done.length===1 && !pending && !fails.length ? done[0].msg :
+    [done.length ? `${done.length} fichier${done.length>1?"s":""} importé${done.length>1?"s":""} : ${done.map(d=>d.cls+" "+d.tri).join(", ")}.` : "",
+     pending ? `${pending.fname} : classe ou trimestre non reconnus, choisissez-les puis cliquez sur Importer.` : "",
+     fails.length ? "Non importé : " + fails.join(" ; ") : ""].filter(Boolean).join(" ");
+  if(pending) state.cur.view = "data";
   save(); render(); toast(ui.importMsg);
+  if(pending){
+    const selC = document.getElementById("impCls"), selT = document.getElementById("impTri");
+    if(pending.meta.cls && selC) selC.value = pending.meta.cls;
+    if(pending.meta.tri && selT) selT.value = pending.meta.tri;
+  }
 }
 
 /* ---------- actions ---------- */
@@ -1407,14 +1491,19 @@ function act(el){
     case "copy-app": { const s = findStudent(id); if(s) copyText(s.appTechno, "Appréciation de "+full(s)); break; }
     case "copy-all-app": copyText(sorted(b.students,"nom").map(s=>`${s.nom}\t${s.prenom}\t${fmt(s.techno)}\t${s.appTechno.replace(/[\t\r\n]+/g," ")}`).join("\n"), "Appréciations techno"); break;
     case "import-csv": {
-      const f = document.getElementById("csvFile").files[0], p = document.getElementById("csvPaste").value;
-      if(p.trim()) doImport(p);
-      else if(f && /\.xlsx$/i.test(f.name)){
-        f.arrayBuffer().then(readXlsx).then(rows=>doImportRows(rows, detectMeta(rows)))
-          .catch(()=>{ ui.importMsg = "Lecture du fichier Excel impossible. Enregistrez-le en CSV puis réessayez."; render(); });
+      const fs = document.getElementById("csvFile").files, p = document.getElementById("csvPaste").value;
+      if(ui.dropRows){
+        const d = ui.dropRows;
+        doImportRows(d.rows, {cls:document.getElementById("impCls").value, tri:document.getElementById("impTri").value}, {fname:d.fname});
       }
-      else if(f){ const r = new FileReader(); r.onload = () => doImport(String(r.result)); r.readAsText(f); }
-      else toast("Choisissez un fichier ou collez des lignes");
+      else if(p.trim()) doImport(p, "Texte collé");
+      else if(fs && fs.length){
+        Array.from(fs).forEach(f=>{
+          readAnyFile(f).then(rows=>doImportRows(rows, detectMeta(rows, f.name), {fname:f.name}))
+            .catch(()=>{ ui.importMsg = f.name + " : lecture impossible. Enregistrez-le en CSV puis réessayez."; render(); });
+        });
+      }
+      else toast("Choisissez ou déposez un fichier, ou collez des lignes");
       break; }
     case "copy-roster": {
       const from = peek(state.cur.cls, document.getElementById("fromTri").value); if(!from) break;
@@ -1534,6 +1623,20 @@ document.addEventListener("keydown", e=>{
   if(e.key==="ArrowRight" && ui.idx < n-1){ ui.idx++; render(); }
   else if(e.key==="ArrowLeft" && ui.idx > 0){ ui.idx--; render(); }
 });
+
+/* ---------- glisser-déposer sur toute la page ---------- */
+let dragDepth = 0;
+const hasFiles = e => e.dataTransfer && Array.from(e.dataTransfer.types||[]).includes("Files");
+function showDrop(on){ const z = document.getElementById("dropzone"); if(z) z.hidden = !on; }
+document.addEventListener("dragenter", e=>{ if(!hasFiles(e)) return; e.preventDefault(); dragDepth++; showDrop(true); });
+document.addEventListener("dragover", e=>{ if(!hasFiles(e)) return; e.preventDefault(); e.dataTransfer.dropEffect = "copy"; });
+document.addEventListener("dragleave", e=>{ if(!hasFiles(e)) return; dragDepth = Math.max(0, dragDepth-1); if(!dragDepth) showDrop(false); });
+document.addEventListener("drop", e=>{
+  if(!hasFiles(e)) return;
+  e.preventDefault(); dragDepth = 0; showDrop(false);
+  importFiles(e.dataTransfer.files);
+});
+document.addEventListener("change", e=>{ if(e.target && e.target.id==="csvFile" && e.target.files.length && !ui.dropRows) importFiles(e.target.files).then(()=>{ const f = document.getElementById("csvFile"); if(f) f.value = ""; }); });
 
 render();
 initSync();
