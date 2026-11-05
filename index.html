@@ -1,0 +1,1540 @@
+<title>Conseils de classe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bitter:wght@600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout : barre de pilotage collante (classe, trimestre, onglets), puis une feuille de travail large par onglet */
+:root{
+  --paper:#eef1f6; --card:#ffffff; --ink:#16202e; --muted:#5b6676; --line:#d5dce6; --soft:#e4e9f1;
+  --accent:#2340a8; --accent-ink:#ffffff;
+  --fel:#9a6c00; --fel-bg:#fbf0d3; --comp:#6b46c1; --comp-bg:#eee7fb; --enc:#2f7d4f; --enc-bg:#e2f3e8;
+  --trav:#b85600; --trav-bg:#fde9d6; --comp2:#b3261e; --comp2-bg:#fbe1df;
+  --f-display:"Bitter",Georgia,serif; --f-body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif; --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0f141b; --card:#18202b; --ink:#e6ebf2; --muted:#9aa6b6; --line:#2b3545; --soft:#212b38;
+  --accent:#8ea8ff; --accent-ink:#0f141b;
+  --fel:#e8b84a; --fel-bg:#3a2f12; --comp:#b99ef5; --comp-bg:#2d2440; --enc:#6cc792; --enc-bg:#173325;
+  --trav:#f0a050; --trav-bg:#3b2814; --comp2:#f2776e; --comp2-bg:#3d1c1a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0f141b; --card:#18202b; --ink:#e6ebf2; --muted:#9aa6b6; --line:#2b3545; --soft:#212b38;
+  --accent:#8ea8ff; --accent-ink:#0f141b;
+  --fel:#e8b84a; --fel-bg:#3a2f12; --comp:#b99ef5; --comp-bg:#2d2440; --enc:#6cc792; --enc-bg:#173325;
+  --trav:#f0a050; --trav-bg:#3b2814; --comp2:#f2776e; --comp2-bg:#3d1c1a; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45;margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.2}
+.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+/* ===== Header ESTIC ===== */
+.estic-bar{display:flex;align-items:center;gap:11px;padding:8px 18px;background:var(--card);border-bottom:1px solid var(--line);font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
+.estic-bar .estic-logo{height:30px;width:auto;display:block;flex:0 0 auto}
+.estic-bar .estic-txt{display:flex;flex-direction:column;line-height:1.12}
+.estic-bar .estic-txt strong{font-family:var(--f-display);font-size:13px;font-weight:700;color:var(--ink);letter-spacing:-.01em}
+.estic-bar .estic-txt span{font-family:var(--f-mono);font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-top:1px}
+.estic-bar .estic-copy{margin-left:auto;font-family:var(--f-mono);font-size:10px;color:var(--muted);text-align:right;line-height:1.3}
+@media(max-width:560px){.estic-bar .estic-copy{font-size:8.5px}.estic-bar .estic-logo{height:26px}}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--card);border-bottom:1px solid var(--line)}
+.bar{max-width:1180px;margin:0 auto;padding:12px 16px 0;display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px}
+.brand{display:flex;align-items:baseline;gap:10px;margin-right:auto}
+.brand h1{font-size:20px}
+.brand small{color:var(--muted);font-size:13px}
+.pick{display:flex;gap:8px;align-items:center}
+.pick label{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+select,input[type=number],input[type=text],input[type=search],input[type=date]{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:6px 8px;min-width:0}
+textarea{width:100%;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:8px 10px;resize:vertical;min-height:64px}
+.tabs{max-width:1180px;margin:0 auto;padding:6px 16px 0;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.tab{border:0;background:none;padding:10px 14px;border-bottom:3px solid transparent;color:var(--muted);font-weight:700;white-space:nowrap;cursor:pointer}
+.tab[aria-current="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+
+main{max-width:1180px;margin:0 auto;padding-block:20px 60px;padding-inline:16px;display:grid;gap:18px}
+.banner{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;background:var(--soft);border:1px dashed var(--line);border-radius:8px;padding:10px 14px;font-size:14px}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--card);border-radius:6px;padding:7px 12px;cursor:pointer;font-weight:700;font-size:14px}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.danger{color:var(--comp2);border-color:var(--comp2)}
+.btn.small{padding:4px 9px;font-size:13px}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.toolbar .grow{flex:1 1 200px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:12px;min-width:0}
+.panel h2{font-size:17px}
+.hint{color:var(--muted);font-size:13px}
+.label{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+
+.stats{display:flex;flex-wrap:wrap;gap:8px}
+.stat{display:flex;align-items:baseline;gap:8px;padding:6px 12px;border-radius:999px;background:var(--card);border:1px solid var(--line);font-size:14px}
+.stat b{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.stat.fel{background:var(--fel-bg);color:var(--fel);border-color:transparent}
+.stat.comp{background:var(--comp-bg);color:var(--comp);border-color:transparent}
+.stat.enc{background:var(--enc-bg);color:var(--enc);border-color:transparent}
+.stat.trav{background:var(--trav-bg);color:var(--trav);border-color:transparent}
+.stat.cpt{background:var(--comp2-bg);color:var(--comp2);border-color:transparent}
+
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+table{border-collapse:collapse;width:100%;min-width:760px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+th{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--soft);position:sticky;top:0}
+td.n{text-align:right;width:70px}
+tr.open td{background:var(--soft)}
+tr.edit td{background:var(--soft);padding-top:0}
+.name{border:0;background:none;padding:0;text-align:left;cursor:pointer;font-weight:700}
+.name span{font-weight:400}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--line);margin-right:8px;vertical-align:middle}
+.dot.on{background:var(--accent)}
+
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.seg button{border:0;background:var(--card);padding:5px 9px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"].m-{background:var(--soft);color:var(--ink)}
+.seg button[aria-pressed="true"].m-enc{background:var(--enc-bg);color:var(--enc)}
+.seg button[aria-pressed="true"].m-comp{background:var(--comp-bg);color:var(--comp)}
+.seg button[aria-pressed="true"].m-fel{background:var(--fel-bg);color:var(--fel)}
+.tog{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 10px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer}
+.tog[aria-pressed="true"].g-travail{background:var(--trav-bg);color:var(--trav);border-color:var(--trav)}
+.tog[aria-pressed="true"].g-comportement{background:var(--comp2-bg);color:var(--comp2);border-color:var(--comp2)}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:10px 0 6px}
+.edit-grid > div{display:grid;gap:4px;min-width:0}
+
+/* Conseil en direct */
+.live{display:grid;grid-template-columns:240px 1fr;gap:16px;align-items:start}
+.roster{background:var(--card);border:1px solid var(--line);border-radius:10px;max-height:72vh;overflow:auto;padding:6px}
+.roster button{display:flex;width:100%;justify-content:space-between;align-items:center;gap:6px;border:0;background:none;padding:7px 8px;border-radius:6px;text-align:left;cursor:pointer;font-size:14px}
+.roster button[aria-current="true"]{background:var(--soft);font-weight:700}
+.roster .marks{display:flex;gap:3px}
+.mk{width:9px;height:9px;border-radius:2px}
+.mk.enc{background:var(--enc)}.mk.comp{background:var(--comp)}.mk.fel{background:var(--fel)}.mk.travail{background:var(--trav)}.mk.comportement{background:var(--comp2)}
+.mk.vu{background:var(--muted);border-radius:50%}
+.stage{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;display:grid;gap:16px;min-width:0}
+.stage-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;align-items:flex-start}
+.stage-head h2{font-size:30px}
+.stage-head h2 span{font-weight:600;color:var(--muted)}
+.big-num{display:flex;gap:18px;flex-wrap:wrap}
+.big-num div{display:grid}
+.big-num b{font-family:var(--f-mono);font-size:28px;font-variant-numeric:tabular-nums}
+.subjects{display:flex;flex-wrap:wrap;gap:6px}
+.subjects span{font-size:13px;background:var(--soft);border-radius:4px;padding:2px 8px}
+.quote{border-left:3px solid var(--accent);padding:4px 12px;color:var(--muted);font-size:14px}
+.seg.big button{padding:10px 14px;font-size:15px}
+.tog.big{padding:8px 14px;font-size:15px}
+.progress{height:6px;background:var(--soft);border-radius:999px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--accent)}
+.navrow{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.timer{display:flex;align-items:center;gap:8px}
+.timer b{font-family:var(--f-mono);font-size:18px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.two > div{display:grid;gap:4px;min-width:0}
+
+/* Compte-rendu */
+.cr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+.field{display:grid;gap:4px}
+pre.out{white-space:pre-wrap;word-break:break-word;background:var(--soft);border-radius:8px;padding:14px;font-family:var(--f-mono);font-size:13px;line-height:1.5;margin:0;max-height:70vh;overflow:auto}
+
+.profs{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.prof{display:grid;gap:6px;align-content:start;border:1px solid var(--line);border-radius:8px;padding:10px;background:var(--soft);min-width:0}
+.prof-head{display:flex;gap:8px;align-items:center}
+.prof-mat{flex:1;min-width:0;font-weight:700;background:transparent!important;border-color:transparent!important;padding-left:0!important;font-family:var(--f-display)}
+.prof-mat:focus{border-color:var(--line)!important;background:var(--card)!important;padding-left:8px!important}
+.prof-avg{font-size:14px;color:var(--muted)}
+.prof textarea{min-height:72px}
+.badge{display:inline-block;min-width:20px;padding:0 6px;border-radius:999px;background:var(--trav-bg);color:var(--trav);font-size:12px;text-align:center}
+.note-line{font-size:13px;color:var(--muted);margin-top:3px;max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.act-count{font-weight:700;color:var(--trav)}
+.act-count.ok{color:var(--enc)}
+.mk.act{background:var(--accent);border-radius:2px;transform:rotate(45deg);width:8px;height:8px}
+.tasks{display:grid;gap:6px}
+.task{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--card);cursor:pointer}
+.task input{margin-top:3px;width:16px;height:16px;accent-color:var(--accent);flex:0 0 auto}
+.task.done span{text-decoration:line-through;color:var(--muted)}
+.act-student{display:grid;grid-template-columns:240px 1fr;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.act-student .who{font-weight:700}
+.act-student .who span:not(.pill){font-weight:400}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:1px 7px;border-radius:999px;margin-top:4px}
+.pill.m-enc{background:var(--enc-bg);color:var(--enc)}.pill.m-comp{background:var(--comp-bg);color:var(--comp)}.pill.m-fel{background:var(--fel-bg);color:var(--fel)}
+.pill.g-travail{background:var(--trav-bg);color:var(--trav)}.pill.g-comportement{background:var(--comp2-bg);color:var(--comp2)}
+@media (max-width:820px){.act-student{grid-template-columns:1fr}.note-line{max-width:220px}}
+.sync-pill{margin-left:6px;border:1px solid var(--line);background:var(--soft);color:var(--muted);border-radius:999px;padding:2px 10px;font-size:12px;font-weight:700;cursor:pointer}
+.sync-pill[data-st="ok"]{background:var(--enc-bg);color:var(--enc);border-color:transparent}
+.sync-pill[data-st="run"]{background:var(--soft);color:var(--accent)}
+.sync-pill[data-st="wait"]{background:var(--fel-bg);color:var(--fel);border-color:transparent}
+.sync-pill[data-st="err"]{background:var(--comp2-bg);color:var(--comp2);border-color:transparent}
+/* Appréciations */
+.gen-bar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;background:var(--soft);border-radius:8px;padding:10px 12px}
+.gen-bar > div:first-child{display:grid}
+.bav{display:grid;gap:2px;margin-top:8px;font-weight:400}
+.bav .label{font-size:10.5px}
+.bav input{width:100%;accent-color:var(--enc)}
+.bav input.lvl-1{accent-color:var(--fel)}
+.bav input.lvl-2{accent-color:var(--trav)}
+.bav input.lvl-3,.bav input.lvl-4{accent-color:var(--comp2)}
+.bav-val{font-size:12px;font-weight:700;color:var(--enc)}
+.bav-val.lvl-1{color:var(--fel)}.bav-val.lvl-2{color:var(--trav)}.bav-val.lvl-3,.bav-val.lvl-4{color:var(--comp2)}
+.bank{display:grid;gap:10px}
+.bank-cat{display:grid;gap:6px}
+.chip{border:1px solid var(--line);background:var(--soft);border-radius:6px;padding:5px 9px;font-size:13px;cursor:pointer;text-align:left}
+.chip:hover{border-color:var(--accent)}
+.app-row{display:grid;grid-template-columns:200px 90px 1fr;gap:12px;align-items:start;padding:12px 0;border-bottom:1px solid var(--line)}
+.app-row:last-child{border-bottom:0}
+.app-row .who{font-weight:700}
+.app-row .who span{display:block;font-weight:400;color:var(--muted);font-size:13px}
+.app-meta{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted);margin-top:4px}
+.app-row.active textarea{border-color:var(--accent)}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+.confirm{display:inline-flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--comp2-bg);color:var(--comp2);border-radius:6px;padding:6px 10px;font-weight:700;font-size:14px}
+.radio{display:flex;gap:14px;flex-wrap:wrap;font-size:14px}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:8px;font-weight:700;font-size:14px;z-index:50;max-width:calc(100% - 32px)}
+.modal{position:fixed;inset:0;background:rgba(10,14,20,.55);display:grid;place-items:center;z-index:60;padding:16px}
+.modal .panel{width:min(640px,100%)}
+.modal textarea{min-height:240px;font-family:var(--f-mono);font-size:12px}
+
+@media (max-width:820px){
+  .live,.cr,.grid2,.two,.edit-grid{grid-template-columns:1fr}
+  .roster{max-height:200px}
+  .app-row{grid-template-columns:1fr 90px}
+  .app-row > :last-child{grid-column:1 / -1}
+  .stage-head h2{font-size:24px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<header class="estic-bar"><img class="estic-logo" alt="ESTIC" src="data:image/png;base64,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"><div class="estic-txt"><strong>Professeur AGOSTINI</strong><span>Technologie · ESTIC</span></div><div class="estic-copy">© ESTIC — Tous droits réservés</div></header>
+<header class="top">
+  <div class="bar">
+    <div class="brand"><h1>Conseils de classe</h1><small id="saveState">Enregistré dans ce navigateur</small><button class="sync-pill" id="syncState" data-act="view" data-v="data" data-st="off">Synchro désactivée</button></div>
+    <div class="pick"><label for="selCls">Classe</label><select id="selCls" data-field="cls"></select></div>
+    <div class="pick"><label for="selTri">Période</label><select id="selTri" data-field="tri"></select></div>
+  </div>
+  <nav class="tabs" id="tabs" aria-label="Sections"></nav>
+</header>
+<main id="main"></main>
+<div id="toast" class="toast" hidden></div>
+<div id="modal" class="modal" hidden></div>
+
+<script>
+"use strict";
+const STORE_KEY = "conseils-de-classe-v1";
+const CLASSES = ["5A","5B","5C","5D","5E","4A","4B","4C","4D","4E","3A","3B","3C","3D","3E","3PM"];
+const TRIS = [["T1","1er trimestre"],["T2","2e trimestre"],["T3","3e trimestre"]];
+const MENTIONS = [
+  {k:"", l:"Aucune", s:"—"},
+  {k:"enc", l:"Encouragements", s:"Enc."},
+  {k:"comp", l:"Compliments", s:"Comp."},
+  {k:"fel", l:"Félicitations", s:"Fél."}
+];
+const GARDES = [{k:"travail", l:"Travail"}, {k:"comportement", l:"Comportement"}];
+const VIEWS = [["prep","Préparer"],["live","Conseil en direct"],["cr","Compte-rendu"],["techno","Mes appréciations"],["actions","Actions"],["data","Données"]];
+
+const DEFAULT_BANK = `# Points forts
+{prenom} s’investit avec sérieux dans les activités de technologie.
+Travail régulier et soigné en atelier comme en salle.
+Très bonne compréhension des notions abordées.
+Participation pertinente et constructive.
+{prenom} sait travailler efficacement en équipe.
+# À améliorer
+Le travail en autonomie reste à renforcer.
+Les résultats sont fragiles : il faut revoir les cours régulièrement.
+Le cahier doit être tenu à jour.
+L’attitude en classe doit devenir plus sérieuse.
+Trop de bavardages qui nuisent au travail.
+# Conseils
+Continuez ainsi.
+Il faut persévérer, les efforts commencent à payer.
+Un investissement plus régulier permettrait de progresser.
+Ensemble satisfaisant, à poursuivre.`;
+
+/* ---------- état ---------- */
+let state = loadState();
+const ui = { q:"", sort:"nom", open:null, ask:null, idx:0, lastApp:null, timer:{run:false, t0:0, acc:0}, importMsg:"" };
+
+function freshState(){
+  const s = { v:1, cur:{cls:"5A", tri:"T1", view:"prep"}, data:{}, seuils:{enc:12, comp:14, fel:16}, bank:DEFAULT_BANK };
+  s.data["5A|T1"] = exampleBook();
+  return s;
+}
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(raw){ const s = JSON.parse(raw); if(s && s.v===1 && s.data) return Object.assign(freshState(), s, {data:s.data}); }
+  }catch(e){}
+  return freshState();
+}
+let saveT = null;
+function save(){
+  clearTimeout(saveT);
+  saveT = setTimeout(()=>{
+    state.maj = Date.now();
+    saveLocalOnly();
+    scheduleSync();
+  }, 250);
+}
+function saveLocalOnly(){
+  let ok = true;
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(e){ ok = false; }
+  const el = document.getElementById("saveState");
+  if(el) el.textContent = ok ? "Enregistré dans ce navigateur" : "Stockage indisponible : exportez une sauvegarde";
+}
+function key(c,t){ return c+"|"+t; }
+function emptyBook(){ return {students:[], date:"", presents:"", bilan:"", delegues:"", parents:"", example:false}; }
+function book(c,t){
+  c = c || state.cur.cls; t = t || state.cur.tri;
+  const k = key(c,t);
+  if(!state.data[k]) state.data[k] = emptyBook();
+  return state.data[k];
+}
+function peek(c,t){ return state.data[key(c,t)]; }
+function uid(){ return "s"+Math.random().toString(36).slice(2,10); }
+function newStudent(o){
+  return Object.assign({id:uid(), nom:"", prenom:"", moy:null, techno:null, rang:null, mat:{}, appTechno:"", appGen:"", mention:"", garde:{travail:false, comportement:false}, notes:"", vu:false}, o||{});
+}
+
+function exampleBook(){
+  const b = emptyBook(); b.example = true;
+  const rows = [
+    ["BERTRAND","Lina",15.82,17,"fel"],["CHEVALIER","Noah",9.41,8.5,"","travail"],["DUMONT","Inès",13.27,14,"enc"],
+    ["FAURE","Mathis",11.05,12.5,""],["GARNIER","Chloé",16.94,18,"fel"],["HUMBERT","Enzo",8.12,10,"","comportement"],
+    ["LAMBERT","Jade",14.36,15,"comp"],["MARCHAL","Hugo",12.48,11,""],["NICOLAS","Léa",10.73,13,"enc"],
+    ["PERRIN","Tom",7.9,9,"","travail,comportement"],["ROUSSEL","Manon",14.91,16.5,"comp"],["THIÉBAUT","Lucas",12.02,14.5,""]
+  ];
+  b.students = rows.map(r => newStudent({
+    nom:r[0], prenom:r[1], moy:r[2], techno:r[3], mention:r[4],
+    garde:{travail:(r[5]||"").includes("travail"), comportement:(r[5]||"").includes("comportement")},
+    mat:{"Français":+(r[2]+0.6).toFixed(2), "Mathématiques":+(r[2]-0.8).toFixed(2), "Histoire-géo":+(r[2]+0.3).toFixed(2), "Anglais":+(r[2]-0.2).toFixed(2)}
+  }));
+  b.students[0].appTechno = "Lina s’investit avec sérieux dans les activités de technologie. Continuez ainsi.";
+  b.students[1].appTechno = "Les résultats sont fragiles : il faut revoir les cours régulièrement.";
+  b.students[1].notes = "Rencontre avec la famille à prévoir avant les vacances.";
+  b.date = "";
+  b.subjects = ["Français","Mathématiques","Histoire-géo","Anglais"];
+  b.profs = [
+    {id:uid(), matiere:"Français", prof:"Mme LEROY", bilan:"Classe agréable et sérieuse. La participation orale est active. Le travail personnel reste insuffisant pour certains."},
+    {id:uid(), matiere:"Mathématiques", prof:"M. ROBERT", bilan:"Bons résultats d\u2019ensemble. Trop de bavardages en fin d\u2019heure."},
+    {id:uid(), matiere:"Histoire-géo", prof:"Mme MASSON", bilan:"Classe investie et curieuse. Niveau hétérogène : un petit groupe est en difficulté."},
+    {id:uid(), matiere:"Anglais", prof:"Mme PETIT", bilan:"Participation dynamique. Attention aux bavardages."},
+    {id:uid(), matiere:"Technologie", prof:"M. AGOSTINI", bilan:"Classe agréable et impliquée en atelier. Des oublis de matériel répétés."}
+  ];
+  b.bilanAuto = true; b.bilan = "";
+  return b;
+}
+
+/* ---------- outils ---------- */
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function fmt(n){ return (n==null || isNaN(n)) ? "—" : Number(n).toFixed(2).replace(".",","); }
+function parseNum(v){
+  if(v==null) return null;
+  const s = String(v).trim().replace(",",".").replace(/\s/g,"");
+  if(s==="" || !/^-?\d*\.?\d+$/.test(s)) return null;
+  const n = parseFloat(s); return isNaN(n) ? null : n;
+}
+function norm(s){ return String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().trim(); }
+function full(s){ return s.nom + " " + s.prenom; }
+function triLabel(t){ return (TRIS.find(x=>x[0]===t)||[t,t])[1]; }
+function mentionOf(k){ return MENTIONS.find(m=>m.k===k) || MENTIONS[0]; }
+function sorted(list, mode){
+  const a = list.slice();
+  if(mode==="moy") a.sort((x,y)=>(y.moy??-1)-(x.moy??-1));
+  else if(mode==="techno") a.sort((x,y)=>(y.techno??-1)-(x.techno??-1));
+  else a.sort((x,y)=>full(x).localeCompare(full(y),"fr"));
+  return a;
+}
+function stats(b){
+  const S = b.students, m = S.map(s=>s.moy).filter(x=>x!=null);
+  const avg = m.length ? m.reduce((a,c)=>a+c,0)/m.length : null;
+  return {
+    n:S.length, avg, min:m.length?Math.min(...m):null, max:m.length?Math.max(...m):null,
+    fel:S.filter(s=>s.mention==="fel").length, comp:S.filter(s=>s.mention==="comp").length, enc:S.filter(s=>s.mention==="enc").length,
+    travail:S.filter(s=>s.garde.travail).length, comportement:S.filter(s=>s.garde.comportement).length,
+    vu:S.filter(s=>s.vu).length
+  };
+}
+function findStudent(id){ return book().students.find(s=>s.id===id); }
+let toastT=null;
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.hidden = false;
+  clearTimeout(toastT); toastT = setTimeout(()=>{ t.hidden = true; }, 2600);
+}
+function copyText(text, label){
+  const fallback = () => showModal(label||"Texte à copier", text);
+  try{
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(()=>toast("Copié dans le presse-papiers"), fallback);
+    } else fallback();
+  }catch(e){ fallback(); }
+}
+function download(name, text, mime){
+  try{
+    const blob = new Blob([text], {type:mime||"text/plain;charset=utf-8"});
+    const u = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = u; a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(u), 1500);
+    toast("Téléchargement lancé. S’il ne démarre pas, utilisez Copier.");
+  }catch(e){ showModal(name, text); }
+}
+function showModal(title, text){
+  const m = document.getElementById("modal");
+  m.innerHTML = `<div class="panel" role="dialog" aria-modal="true" aria-label="${esc(title)}"><h2>${esc(title)}</h2>
+    <p class="hint">Le texte est sélectionné : copiez-le avec Ctrl+C (ou Cmd+C).</p>
+    <textarea id="modalText" readonly>${esc(text)}</textarea>
+    <div class="toolbar"><button class="btn primary" data-act="close-modal">Fermer</button></div></div>`;
+  m.hidden = false;
+  const ta = document.getElementById("modalText"); ta.focus(); ta.select();
+}
+
+/* ---------- rendu général ---------- */
+function renderHeader(){
+  const sc = document.getElementById("selCls");
+  sc.innerHTML = CLASSES.map(c=>{
+    const b = peek(c, state.cur.tri); const n = b ? b.students.length : 0;
+    return `<option value="${c}"${c===state.cur.cls?" selected":""}>${c}${n?" ("+n+")":""}</option>`;
+  }).join("");
+  document.getElementById("selTri").innerHTML = TRIS.map(t=>`<option value="${t[0]}"${t[0]===state.cur.tri?" selected":""}>${t[1]}</option>`).join("");
+  const pend = pendingCount(book());
+  document.getElementById("tabs").innerHTML = VIEWS.map(v=>`<button class="tab" data-act="view" data-v="${v[0]}" aria-current="${v[0]===state.cur.view}">${v[1]}${v[0]==="actions"&&pend?` <span class="badge" id="pendBadge">${pend}</span>`:""}</button>`).join("");
+}
+function render(){
+  renderHeader();
+  const b = book();
+  let html = "";
+  if(b.example) html += `<div class="banner"><span><b>Classe d’exemple</b> : élèves fictifs pour découvrir l’outil.</span>${askBtn("clear-example","Effacer l’exemple","Effacer ces élèves fictifs ?","btn small")}</div>`;
+  const v = state.cur.view;
+  html += v==="prep" ? viewPrep(b) : v==="live" ? viewLive(b) : v==="cr" ? viewCR(b) : v==="techno" ? viewTechno(b) : v==="actions" ? viewActions(b) : viewData(b);
+  document.getElementById("main").innerHTML = html;
+  if(v==="live") updateTimer();
+}
+function askBtn(what, label, question, cls){
+  if(ui.ask===what) return `<span class="confirm">${esc(question)} <button class="btn small danger" data-act="do" data-what="${what}">Oui</button><button class="btn small" data-act="cancel-ask">Annuler</button></span>`;
+  return `<button class="${cls||"btn"}" data-act="ask" data-what="${what}">${esc(label)}</button>`;
+}
+function statStrip(b){
+  const s = stats(b);
+  return `<div class="stats">
+    <span class="stat">Effectif <b>${s.n}</b></span>
+    <span class="stat">Moyenne de classe <b>${fmt(s.avg)}</b></span>
+    <span class="stat fel">Félicitations <b>${s.fel}</b></span>
+    <span class="stat comp">Compliments <b>${s.comp}</b></span>
+    <span class="stat enc">Encouragements <b>${s.enc}</b></span>
+    <span class="stat trav">MEG travail <b>${s.travail}</b></span>
+    <span class="stat cpt">MEG comportement <b>${s.comportement}</b></span>
+  </div>`;
+}
+function emptyState(){
+  return `<div class="panel empty"><h2>Aucun élève en ${esc(state.cur.cls)} pour le ${esc(triLabel(state.cur.tri))}</h2>
+    <p>Importez un export CSV (Pronote ou tableur) ou ajoutez les élèves un par un.</p>
+    <div class="toolbar" style="justify-content:center"><button class="btn primary" data-act="view" data-v="data">Importer une liste</button><button class="btn" data-act="add-student">Ajouter un élève</button></div></div>`;
+}
+function mentionSeg(s, big){
+  return `<div class="seg${big?" big":""}" role="group" aria-label="Mention">${MENTIONS.map(m=>
+    `<button class="m-${m.k}" data-act="mention" data-id="${s.id}" data-k="${m.k}" aria-pressed="${s.mention===m.k}" title="${m.l}">${big?m.l:m.s}</button>`).join("")}</div>`;
+}
+function gardeTogs(s, big){
+  return `<div class="tags">${GARDES.map(g=>
+    `<button class="tog g-${g.k}${big?" big":""}" data-act="garde" data-id="${s.id}" data-k="${g.k}" aria-pressed="${!!s.garde[g.k]}">MEG ${g.l.toLowerCase()}</button>`).join("")}</div>`;
+}
+
+/* ---------- Préparer ---------- */
+function viewPrep(b){
+  if(!b.students.length) return emptyState();
+  return `${statStrip(b)}
+  <div class="toolbar">
+    <input class="grow" id="q" type="search" placeholder="Rechercher un élève" value="${esc(ui.q)}" data-field="q" aria-label="Rechercher un élève">
+    <select id="sort" data-field="sort" aria-label="Trier">
+      <option value="nom"${ui.sort==="nom"?" selected":""}>Tri : nom</option>
+      <option value="moy"${ui.sort==="moy"?" selected":""}>Tri : moyenne générale</option>
+      <option value="techno"${ui.sort==="techno"?" selected":""}>Tri : technologie</option>
+    </select>
+    <button class="btn" data-act="propose">Proposer les mentions</button>
+    <button class="btn" data-act="add-student">Ajouter un élève</button>
+    ${askBtn("reset-class","Effacer la classe","Effacer toute la "+state.cur.cls+" (les 3 trimestres) ?","btn danger")}
+  </div>
+  <div class="scroll"><table><thead><tr><th>Élève</th><th class="n">Moy.</th><th class="n">Techno</th><th>Mention</th><th>Mise en garde</th><th></th></tr></thead>
+  <tbody id="prepRows">${prepRows(b)}</tbody></table></div>
+  <p class="hint">« Proposer les mentions » remplit seulement les élèves sans mention ni mise en garde, selon les seuils réglés dans Données (${fmt(state.seuils.enc)} / ${fmt(state.seuils.comp)} / ${fmt(state.seuils.fel)}).</p>`;
+}
+function prepRows(b){
+  const q = norm(ui.q);
+  const list = sorted(b.students, ui.sort).filter(s => !q || norm(full(s)).includes(q));
+  if(!list.length) return `<tr><td colspan="6" class="empty">Aucun élève ne correspond.</td></tr>`;
+  return list.map(s=>{
+    const open = ui.open===s.id;
+    let r = `<tr class="${open?"open":""}">
+      <td><button class="name" data-act="toggle-open" data-id="${s.id}" aria-expanded="${open}"><span class="dot${(s.appGen||s.notes)?" on":""}" title="${(s.appGen||s.notes)?"Appréciation ou note saisie":"Rien de saisi"}"></span>${esc(s.nom)} <span>${esc(s.prenom)}</span></button><div class="note-line" id="ns-${s.id}">${noteLine(s)}</div></td>
+      <td class="n num">${fmt(s.moy)}</td><td class="n num">${fmt(s.techno)}</td>
+      <td>${mentionSeg(s)}</td><td>${gardeTogs(s)}</td>
+      <td><button class="btn small" data-act="toggle-open" data-id="${s.id}">${open?"Fermer":"Détails"}</button></td></tr>`;
+    if(open) r += `<tr class="edit"><td colspan="6"><div class="edit-grid">
+      <div><label class="label" for="ag-${s.id}">Appréciation générale</label><textarea id="ag-${s.id}" data-sfield="appGen" data-id="${s.id}">${esc(s.appGen)}</textarea></div>
+      <div><label class="label" for="nt-${s.id}">Notes pour le conseil</label><textarea id="nt-${s.id}" data-sfield="notes" data-id="${s.id}">${esc(s.notes)}</textarea></div>
+      <div><label class="label" for="nm-${s.id}">Nom</label><input type="text" id="nm-${s.id}" data-sfield="nom" data-id="${s.id}" value="${esc(s.nom)}"></div>
+      <div><label class="label" for="pn-${s.id}">Prénom</label><input type="text" id="pn-${s.id}" data-sfield="prenom" data-id="${s.id}" value="${esc(s.prenom)}"></div>
+      <div><label class="label" for="mo-${s.id}">Moyenne générale</label><input type="number" step="0.01" min="0" max="20" id="mo-${s.id}" data-sfield="moy" data-id="${s.id}" value="${s.moy??""}"></div>
+      <div><label class="label">Retirer l’élève</label><div>${askBtn("del:"+s.id,"Supprimer de la liste","Supprimer "+full(s)+" ?","btn small danger")}</div></div>
+    </div></td></tr>`;
+    return r;
+  }).join("");
+}
+
+/* ---------- Conseil en direct ---------- */
+function viewLive(b){
+  if(!b.students.length) return emptyState();
+  const list = sorted(b.students, "nom");
+  if(ui.idx >= list.length) ui.idx = list.length-1;
+  if(ui.idx < 0) ui.idx = 0;
+  const s = list[ui.idx], st = stats(b);
+  const subj = Object.entries(s.mat||{});
+  return `<div class="toolbar" style="justify-content:space-between">
+    <div class="timer"><span class="label">Durée</span><b id="timer">00:00</b>
+      <button class="btn small" data-act="timer">${ui.timer.run?"Pause":"Démarrer"}</button>
+      <button class="btn small" data-act="timer-reset">Remettre à zéro</button></div>
+    <span class="hint">${st.vu} / ${st.n} élèves vus · flèches gauche/droite pour naviguer</span></div>
+  <div class="progress" aria-hidden="true"><i style="width:${st.n?Math.round(st.vu/st.n*100):0}%"></i></div>
+  <div class="live">
+    <nav class="roster" aria-label="Élèves">${list.map((x,i)=>`<button data-act="goto" data-i="${i}" aria-current="${i===ui.idx}">
+      <span>${esc(x.nom)} ${esc(x.prenom)}</span><span class="marks">${x.mention?`<i class="mk ${x.mention}"></i>`:""}${x.garde.travail?'<i class="mk travail"></i>':""}${x.garde.comportement?'<i class="mk comportement"></i>':""}${tasksOf(x).length?`<i class="mk act" title="${tasksOf(x).length} action(s)"></i>`:""}${x.vu?'<i class="mk vu" title="Vu"></i>':""}</span></button>`).join("")}</nav>
+    <section class="stage" aria-live="polite">
+      <div class="stage-head">
+        <div><div class="label">Élève ${ui.idx+1} sur ${list.length}</div><h2>${esc(s.nom)} <span>${esc(s.prenom)}</span></h2></div>
+        <div class="big-num"><div><span class="label">Moyenne</span><b>${fmt(s.moy)}</b></div><div><span class="label">Techno</span><b>${fmt(s.techno)}</b></div>${s.rang!=null?`<div><span class="label">Rang</span><b>${s.rang}<small style="font-size:14px;color:var(--muted)"> / ${list.length}</small></b></div>`:""}</div>
+      </div>
+      ${subj.length?`<div class="subjects">${subj.map(([k,v])=>`<span>${esc(k)} <b class="num">${fmt(v)}</b></span>`).join("")}</div>`:""}
+      ${s.appTechno?`<div class="quote"><span class="label">Mon appréciation techno</span><br>${esc(s.appTechno)}</div>`:""}
+      <div class="field"><span class="label">Mention</span>${mentionSeg(s,true)}</div>
+      <div class="field"><span class="label">Mise en garde</span>${gardeTogs(s,true)}</div>
+      <div class="two">
+        <div><label class="label" for="lag">Appréciation générale</label><textarea id="lag" data-sfield="appGen" data-id="${s.id}">${esc(s.appGen)}</textarea></div>
+        <div><label class="label" for="lnt">Remarques et décisions</label><textarea id="lnt" data-sfield="notes" data-id="${s.id}" placeholder="Une action par ligne">${esc(s.notes)}</textarea>
+          <div class="tags">${QUICK.map((q,i)=>`<button class="chip" data-act="quick" data-id="${s.id}" data-q="${i}">${esc(q)}</button>`).join("")}</div></div>
+      </div>
+      <div class="field"><span class="label">Actions à faire pour ${esc(s.prenom)}</span><div class="tasks" id="tasks-${s.id}">${taskItems(s, key(state.cur.cls,state.cur.tri))}</div></div>
+      <div class="navrow">
+        <button class="btn" data-act="prev"${ui.idx===0?" disabled":""}>Précédent</button>
+        <button class="btn primary" data-act="next-vu">${ui.idx===list.length-1?"Marquer vu":"Marquer vu et suivant"}</button>
+      </div>
+    </section>
+  </div>`;
+}
+function elapsed(){ return ui.timer.acc + (ui.timer.run ? Date.now()-ui.timer.t0 : 0); }
+function updateTimer(){
+  const el = document.getElementById("timer"); if(!el) return;
+  const sec = Math.floor(elapsed()/1000);
+  el.textContent = String(Math.floor(sec/60)).padStart(2,"0")+":"+String(sec%60).padStart(2,"0");
+}
+setInterval(()=>{ if(ui.timer.run) updateTimer(); }, 1000);
+
+/* ---------- Remarques, décisions et actions ---------- */
+const QUICK = ["Appeler les parents","Rencontrer la famille","Entretien avec l\u2019élève","Mettre en place une fiche de suivi","Informer la vie scolaire","Contacter le PsyEN ou l\u2019infirmière","Mettre en place un tutorat","Faire le point au prochain conseil"];
+function tasksOf(s){
+  const done = s.doneTasks || [];
+  return String(s.notes||"").split("\n").map(t=>t.replace(/^\s*[-*\u2022]\s*/,"").trim()).filter(Boolean).map(t=>({t, done: done.includes(norm(t))}));
+}
+function taskItems(s, bk){
+  const T = tasksOf(s);
+  if(!T.length) return `<p class="hint">Aucune action. Écrivez une remarque par ligne ou cliquez une action rapide.</p>`;
+  return T.map((x,i)=>`<label class="task${x.done?" done":""}"><input type="checkbox" data-act="task" data-bk="${bk}" data-id="${s.id}" data-t="${esc(x.t)}"${x.done?" checked":""}><span>${esc(x.t)}</span></label>`).join("");
+}
+function noteLine(s){
+  const T = tasksOf(s); if(!T.length) return "";
+  const d = T.filter(x=>x.done).length;
+  return `<span class="act-count${d===T.length?" ok":""}">${d===T.length?"Actions faites":`${T.length-d} action${T.length-d>1?"s":""} à faire`}</span> ${esc(T.map(x=>x.t).join(" · "))}`;
+}
+function pendingCount(b){ return b.students.reduce((n,s)=>n+tasksOf(s).filter(x=>!x.done).length,0); }
+function viewActions(b){
+  const scope = ui.actScope || "class", show = ui.actShow || "todo";
+  const books = scope==="class" ? [[key(state.cur.cls,state.cur.tri), b]] :
+    Object.entries(state.data).filter(([k,v])=>v && v.students && v.students.length && !v.example)
+      .sort((a,c)=>CLASSES.indexOf(a[0].split("|")[0])-CLASSES.indexOf(c[0].split("|")[0]) || a[0].localeCompare(c[0]));
+  let total = 0, done = 0, html = "";
+  books.forEach(([bk, bb])=>{
+    const rows = sorted(bb.students,"nom").map(s=>{
+      const T = tasksOf(s); total += T.length; done += T.filter(x=>x.done).length;
+      const vis = T.filter(x=>show==="all" || !x.done);
+      if(!vis.length) return "";
+      return `<div class="act-student"><div class="who">${esc(s.nom)} <span>${esc(s.prenom)}</span>${s.mention?` <span class="pill m-${s.mention}">${mentionOf(s.mention).l}</span>`:""}${s.garde.travail?' <span class="pill g-travail">MEG travail</span>':""}${s.garde.comportement?' <span class="pill g-comportement">MEG comportement</span>':""}</div>
+        <div class="tasks">${vis.map(x=>`<label class="task${x.done?" done":""}"><input type="checkbox" data-act="task" data-bk="${bk}" data-id="${s.id}" data-t="${esc(x.t)}"${x.done?" checked":""}><span>${esc(x.t)}</span></label>`).join("")}</div></div>`;
+    }).join("");
+    if(rows) html += `<div class="panel"><h2>${esc(bk.split("|")[0])} · ${esc(triLabel(bk.split("|")[1]))}</h2>${rows}</div>`;
+  });
+  const pct = total ? Math.round(done/total*100) : 0;
+  return `<div class="toolbar" style="justify-content:space-between">
+    <div class="toolbar">
+      <div class="seg" role="group" aria-label="Classes"><button data-act="act-scope" data-v="class" aria-pressed="${scope==="class"}" class="m-">${esc(state.cur.cls)} · ${esc(state.cur.tri)}</button><button data-act="act-scope" data-v="all" aria-pressed="${scope==="all"}" class="m-">Toutes mes classes</button></div>
+      <div class="seg" role="group" aria-label="Affichage"><button data-act="act-show" data-v="todo" aria-pressed="${show==="todo"}" class="m-">À faire</button><button data-act="act-show" data-v="all" aria-pressed="${show==="all"}" class="m-">Toutes</button></div>
+    </div>
+    <button class="btn primary" data-act="copy-actions">Copier la liste</button></div>
+  <div class="stats"><span class="stat">Actions <b>${total}</b></span><span class="stat enc">Faites <b>${done}</b></span><span class="stat trav">À faire <b>${total-done}</b></span></div>
+  <div class="progress" aria-hidden="true"><i style="width:${pct}%"></i></div>
+  ${html || `<div class="panel empty"><h2>${total?"Toutes les actions sont faites":"Aucune action pour l\u2019instant"}</h2><p>Les lignes écrites dans « Remarques et décisions » apparaissent ici, une action par ligne.</p></div>`}`;
+}
+function actionsText(){
+  const scope = ui.actScope || "class";
+  const books = scope==="class" ? [[key(state.cur.cls,state.cur.tri), book()]] : Object.entries(state.data).filter(([k,v])=>v && v.students && v.students.length && !v.example);
+  const L = [];
+  books.forEach(([bk,bb])=>sorted(bb.students,"nom").forEach(s=>tasksOf(s).forEach(x=>{
+    L.push(`[${x.done?"x":" "}] ${bk.split("|")[0]} ${bk.split("|")[1]} - ${full(s)} : ${x.t}`);
+  })));
+  return L.join("\n") || "Aucune action.";
+}
+
+/* ---------- Compte-rendu ---------- */
+function viewCR(b){
+  if(!b.students.length) return emptyState();
+  const s = stats(b);
+  ensureProfs(b);
+  const auto = isAuto(b);
+  if(auto){ b.bilanAuto = true; b.bilan = summarizeBilans(b); }
+  return `${statStrip(b)}
+  <div class="panel">
+    <div class="toolbar" style="justify-content:space-between"><h2>Bilans des professeurs</h2>
+      <span class="hint">${b.profs.filter(p=>p.bilan.trim()).length} / ${b.profs.length} renseignés</span></div>
+    <div class="profs">${b.profs.map(p=>{
+      const m = subjectAvg(b, p.matiere);
+      return `<div class="prof">
+        <div class="prof-head"><input type="text" class="prof-mat" id="pm-${p.id}" data-pfield="matiere" data-pid="${p.id}" value="${esc(p.matiere)}" aria-label="Matière">
+          <span class="num prof-avg" title="Moyenne de la classe dans la matière">${fmt(m)}</span></div>
+        <input type="text" id="pp-${p.id}" data-pfield="prof" data-pid="${p.id}" value="${esc(p.prof)}" placeholder="Professeur" aria-label="Professeur de ${esc(p.matiere)}">
+        <textarea id="pb-${p.id}" data-pfield="bilan" data-pid="${p.id}" placeholder="Bilan de la classe dans cette matière" aria-label="Bilan en ${esc(p.matiere)}">${esc(p.bilan)}</textarea>
+        <div>${askBtn("delprof:"+p.id,"Retirer","Retirer "+p.matiere+" ?","btn small")}</div>
+      </div>`;}).join("")}</div>
+    <div class="toolbar"><button class="btn" data-act="add-prof">Ajouter une matière</button></div>
+  </div>
+  <div class="cr">
+    <div class="panel">
+      <h2>Informations du conseil</h2>
+      <div class="field"><label class="label" for="crDate">Date</label><input type="date" id="crDate" data-bfield="date" value="${esc(b.date)}"></div>
+      <div class="field"><label class="label" for="crPres">Présents</label><textarea id="crPres" data-bfield="presents" placeholder="Chef d’établissement, professeurs, délégués…">${esc(b.presents)}</textarea></div>
+      <div class="field"><div class="toolbar" style="justify-content:space-between"><label class="label" for="crBilan">Bilan de la classe</label>
+        <span class="hint" id="bilanMode">${auto?"Résumé automatique des bilans professeurs":(b.bilanBy==="claude"?"Synthèse rédigée par Claude, modifiable":"Modifié à la main")}</span></div>
+        <textarea id="crBilan" data-bfield="bilan" style="min-height:150px">${esc(b.bilan)}</textarea>
+        <div class="toolbar"><button class="btn small primary" data-act="ai-bilan" id="aiBtn"${ui.ai?"":" hidden"}${ui.aiBusy?" disabled":""}>${ui.aiBusy?"Rédaction en cours…":"Rédiger la synthèse avec Claude"}</button>
+          <button class="btn small" data-act="gen-bilan">${auto?"Recalculer le résumé par mots-clés":"Revenir au résumé par mots-clés"}</button>
+          <span class="hint" id="aiMsg">${esc(ui.aiMsg||"")}</span></div></div>
+      <div class="field"><label class="label" for="crDel">Intervention des délégués élèves</label><textarea id="crDel" data-bfield="delegues">${esc(b.delegues)}</textarea></div>
+      <div class="field"><label class="label" for="crPar">Intervention des parents délégués</label><textarea id="crPar" data-bfield="parents">${esc(b.parents)}</textarea></div>
+      <p class="hint">${s.vu} élève${s.vu>1?"s":""} sur ${s.n} marqué${s.vu>1?"s":""} vu${s.vu>1?"s":""} pendant la séance.</p>
+    </div>
+    <div class="panel">
+      <div class="toolbar" style="justify-content:space-between"><h2>Compte-rendu</h2>
+        <div class="toolbar"><button class="btn primary" data-act="cr-copy">Copier</button><button class="btn" data-act="cr-dl">Télécharger (.txt)</button><button class="btn" data-act="tsv-copy">Copier le tableau</button></div></div>
+      <pre class="out" id="crText">${esc(crText(b))}</pre>
+      <p class="hint">« Copier le tableau » donne un tableau élève par élève à coller dans un tableur.</p>
+    </div></div>`;
+}
+/* ---------- bilans professeurs et résumé automatique ---------- */
+const SUBJ_NAMES = {
+  "francais":"Français","mathematiques":"Mathématiques","anglais lv1":"Anglais LV1","anglais":"Anglais",
+  "espagnol lv2":"Espagnol LV2","allemand lv2":"Allemand LV2","italien lv2":"Italien LV2",
+  "histoire-geographie":"Histoire-géographie","histoire-geo":"Histoire-géographie","histoire geographie":"Histoire-géographie",
+  "sciences vie & terre":"SVT","svt":"SVT","physique-chimie":"Physique-chimie","technologie":"Technologie",
+  "arts plastiques":"Arts plastiques","education musicale":"Éducation musicale","ed.physique & sport.":"EPS","eps":"EPS",
+  "lca latin":"Latin","emi":"EMI","enseignement de complement latin":"Latin (complément)",
+  "education aux media et a l'information":"EMI","education aux media et a l\u2019information":"EMI"
+};
+function subjectAvg(b, name){
+  const k = norm(name);
+  const vals = b.students.map(s => k==="technologie" ? s.techno : Object.entries(s.mat||{}).filter(([m])=>norm(prettySubject(m))===k).map(([,v])=>v)[0]).filter(v=>v!=null);
+  return vals.length ? vals.reduce((a,c)=>a+c,0)/vals.length : null;
+}
+function ensureProfs(b){
+  if(!b.profs) b.profs = [];
+  const have = new Set(b.profs.map(p=>norm(p.matiere)));
+  const order = (b.subjects && b.subjects.length) ? b.subjects.slice() : [];
+  b.students.forEach(s=>Object.keys(s.mat||{}).forEach(k=>{ if(!order.includes(k)) order.push(k); }));
+  let names = order.map(prettySubject);
+  if(!names.some(n=>norm(n)==="technologie")){
+    const i = names.findIndex(n=>norm(n)==="physique-chimie");
+    names.splice(i>=0 ? i+1 : names.length, 0, "Technologie");
+  }
+  names.forEach(n=>{
+    if(have.has(norm(n))) return;
+    have.add(norm(n));
+    b.profs.push({id:uid(), matiere:n, prof: norm(n)==="technologie" ? "M. AGOSTINI" : "", bilan:""});
+  });
+}
+function isAuto(b){ return b.bilanAuto===true || (b.bilanAuto!==false && !String(b.bilan||"").trim()); }
+
+/* thèmes repérés dans les bilans : [id, mots-clés, formulation positive, formulation négative] */
+const THEMES = [
+  ["ambiance", ["agreable","calme","ambiance","sympathique","bonne entente","plaisant"], "classe agréable", "climat de classe à améliorer"],
+  ["serieux", ["serieu","investi","implique","implication","motive","motivation","volontaire","impliques"], "sérieux et investissement", "manque de sérieux et d\u2019investissement"],
+  ["participation", ["particip","dynamique","curieu","interesse","enthousias","oral"], "participation active", "participation insuffisante"],
+  ["travail", ["travail","lecons","devoirs","apprendre","revis","regulier","travailleu"], "travail régulier", "travail personnel insuffisant"],
+  ["resultats", ["resultat","bon niveau","reussi","satisfaisant","excellent","tres bien","bons","bonne classe","notes"], "bons résultats", "résultats fragiles"],
+  ["concentration", ["concentr","attentif","attentive","attentifs","attention en classe","ecoute","inattent","distrait","dissip"], "bonne écoute et concentration", "manque de concentration"],
+  ["bavardages", ["bavard","bruy","agit","turbulen","bruit"], "", "bavardages et agitation"],
+  ["heterogene", ["heterog","ecart","disparate","deux vitesses","groupe d\u2019eleves","petit groupe"], "", "niveau hétérogène, un groupe en difficulté"],
+  ["materiel", ["oubli","materiel","affaires"], "", "oublis de matériel"],
+  ["autonomie", ["autonom"], "bonne autonomie", "autonomie à développer"],
+  ["progres", ["progres","amelior","en hausse"], "progrès constatés", ""]
+];
+const NEG_RE = /(manque|insuffis|pas assez|peu |trop|doit|doivent|devra|devront|faut|attention a|difficult|fragile|faible|irregul|decevant|regrett|inquiet|dommage|n.est pas|ne sont pas|pas toujours|a ameliorer|perturb)/;
+function summarizeBilans(b){
+  const pos = new Map(), neg = new Map();
+  const add = (map, label, subj) => { if(!label) return; if(!map.has(label)) map.set(label, new Set()); map.get(label).add(subj); };
+  (b.profs||[]).forEach(p=>{
+    const txt = norm(p.bilan).replace(/[’]/g,"'");
+    if(!txt.trim()) return;
+    const subj = p.matiere;
+    txt.split(/[.!?;\n]+/).forEach(sent=>{
+      if(!sent.trim()) return;
+      const negative = NEG_RE.test(sent+" ");
+      THEMES.forEach(([id, keys, lp, ln])=>{
+        if(!keys.some(k=>sent.includes(k))) return;
+        if(!lp) add(neg, ln, subj);
+        else if(!ln) { if(!negative) add(pos, lp, subj); }
+        else if(negative) add(neg, ln, subj);
+        else add(pos, lp, subj);
+      });
+    });
+  });
+  const list = map => [...map.entries()].sort((a,c)=>c[1].size-a[1].size)
+    .map(([l,set])=>`${l} (${set.size>=4 ? set.size+" matières" : [...set].join(", ")})`);
+  const L = [];
+  const filled = (b.profs||[]).filter(p=>p.bilan.trim()).length;
+  if(!filled) return "";
+  const P = list(pos), N = list(neg);
+  if(P.length) L.push(`Points forts : ${P.join(" ; ")}.`);
+  if(N.length) L.push(`Points de vigilance : ${N.join(" ; ")}.`);
+  if(!P.length && !N.length) L.push(`${filled} bilan${filled>1?"s":""} renseigné${filled>1?"s":""}, voir le détail par matière.`);
+  const tone = P.length && !N.length ? "Bilan positif dans l\u2019ensemble." : N.length && !P.length ? "Bilan préoccupant : des efforts sont attendus." : P.length && N.length ? (P.length>=N.length ? "Bilan globalement satisfaisant, avec des points à surveiller." : "Bilan mitigé : la classe doit se mobiliser sur les points de vigilance.") : "";
+  if(tone) L.push(tone);
+  return L.join("\n");
+}
+/* synthèse rédigée par Claude (disponible quand l'appli est ouverte dans Claude) */
+let sampleFn = null;
+if(window.claude && typeof window.claude.use==="function"){
+  window.claude.use("sample").then(fn=>{
+    sampleFn = fn || null; ui.ai = !!fn;
+    const btn = document.getElementById("aiBtn"); if(btn) btn.hidden = !fn;
+  }).catch(()=>{});
+}
+async function aiBilan(){
+  const b = book();
+  const pb = (b.profs||[]).filter(p=>p.bilan.trim());
+  if(!sampleFn){ return; }
+  if(!pb.length){ ui.aiMsg = "Saisissez d\u2019abord au moins un bilan professeur."; render(); return; }
+  ui.aiBusy = true; ui.aiMsg = ""; render();
+  const ta = () => document.getElementById("crBilan");
+  if(ta()) ta().value = "…";
+  const prompt = [
+    "Tu rédiges le bilan général de la classe " + state.cur.cls + " pour le compte-rendu du conseil de classe du " + triLabel(state.cur.tri) + ", dans un collège français.",
+    "Synthétise les bilans des professeurs ci-dessous en un seul paragraphe de 3 à 5 phrases.",
+    "Consignes : style sobre et professionnel de procès-verbal ; dégage d\u2019abord les points forts partagés, puis les points de vigilance, en citant les matières concernées seulement si c\u2019est utile ; termine par une phrase d\u2019orientation pour la suite de l\u2019année.",
+    "N\u2019écris aucune moyenne, aucune note ni aucun chiffre. Ne nomme aucun élève. N\u2019invente rien qui ne figure pas dans les bilans.",
+    "Réponds uniquement par le paragraphe, en texte brut, sans titre, sans liste, sans guillemets.",
+    "",
+    "Bilans des professeurs :",
+    ...pb.map(p=>"- " + p.matiere + " : " + p.bilan.trim().replace(/\s*\n\s*/g," "))
+  ].join("\n");
+  try{
+    const r = await sampleFn(prompt, { onText: ({text}) => { if(ta()) ta().value = text; } });
+    b.bilan = r.text.trim(); b.bilanAuto = false; b.bilanBy = "claude";
+    ui.aiMsg = r.truncated ? "Texte coupé : relisez la fin." : "";
+  }catch(e){
+    const code = e && e.code;
+    if(code==="not_granted" || code==="sampling_disabled" || code==="not_declared" || code==="capability_disabled" || code==="capability_removed"){ ui.ai = false; sampleFn = null; ui.aiMsg = "Rédaction par Claude non autorisée ici."; }
+    else if(code==="rate_limited") ui.aiMsg = "Trop de demandes : réessayez dans un moment.";
+    else if(code==="refused") ui.aiMsg = "Claude n\u2019a pas pu rédiger ce texte.";
+    else ui.aiMsg = "La rédaction a échoué, réessayez.";
+  }
+  ui.aiBusy = false; save(); render();
+}
+function refreshBilan(){
+  const b = book();
+  if(!isAuto(b)) return;
+  b.bilanAuto = true; b.bilan = summarizeBilans(b);
+  const ta = document.getElementById("crBilan"); if(ta && document.activeElement!==ta) ta.value = b.bilan;
+}
+function crText(b){
+  const s = stats(b), list = sorted(b.students,"nom");
+  const d = b.date ? b.date.split("-").reverse().join("/") : "à compléter";
+  const L = [];
+  L.push(`CONSEIL DE CLASSE ${state.cur.cls} - ${triLabel(state.cur.tri).toUpperCase()}`);
+  L.push(`Date : ${d}`);
+  if(b.presents.trim()) L.push(`Présents : ${b.presents.trim()}`);
+  L.push(`Effectif : ${s.n} élèves · Moyenne de classe : ${fmt(s.avg)} (min ${fmt(s.min)} · max ${fmt(s.max)})`);
+  const sec = (t, body) => { L.push(""); L.push(t); L.push(body && body.trim() ? body.trim() : "-"); };
+  sec("BILAN DE LA CLASSE", b.bilan);
+  const pb = (b.profs||[]).filter(p=>p.bilan.trim());
+  L.push(""); L.push("BILANS DES PROFESSEURS");
+  L.push(pb.length ? pb.map(p=>`- ${p.matiere}${p.prof.trim()?" ("+p.prof.trim()+")":""}, moyenne ${fmt(subjectAvg(b,p.matiere))} : ${p.bilan.trim().replace(/\s*\n\s*/g," ")}`).join("\n") : "-");
+  sec("INTERVENTION DES DÉLÉGUÉS ÉLÈVES", b.delegues);
+  sec("INTERVENTION DES PARENTS DÉLÉGUÉS", b.parents);
+  const grp = (t, arr) => { L.push(""); L.push(`${t} (${arr.length})`); L.push(arr.length ? arr.map(x=>`- ${full(x)} (${fmt(x.moy)})`).join("\n") : "-"); };
+  grp("FÉLICITATIONS", list.filter(x=>x.mention==="fel"));
+  grp("COMPLIMENTS", list.filter(x=>x.mention==="comp"));
+  grp("ENCOURAGEMENTS", list.filter(x=>x.mention==="enc"));
+  grp("MISES EN GARDE TRAVAIL", list.filter(x=>x.garde.travail));
+  grp("MISES EN GARDE COMPORTEMENT", list.filter(x=>x.garde.comportement));
+  const notes = list.filter(x=>x.notes.trim());
+  L.push(""); L.push("REMARQUES INDIVIDUELLES");
+  L.push(notes.length ? notes.map(x=>`- ${full(x)} : ${x.notes.trim().replace(/\s*\n\s*/g," ")}`).join("\n") : "-");
+  return L.join("\n");
+}
+function tsv(b){
+  const head = ["Nom","Prénom","Moyenne","Technologie","Mention","MEG travail","MEG comportement","Appréciation générale","Appréciation techno","Remarques"];
+  const clean = v => String(v==null?"":v).replace(/[\t\r\n]+/g," ");
+  const rows = sorted(b.students,"nom").map(s=>[s.nom,s.prenom,fmt(s.moy),fmt(s.techno),s.mention?mentionOf(s.mention).l:"",s.garde.travail?"oui":"",s.garde.comportement?"oui":"",s.appGen,s.appTechno,s.notes].map(clean).join("\t"));
+  return [head.join("\t")].concat(rows).join("\n");
+}
+
+/* ---------- Mes appréciations techno ---------- */
+function parseBank(){
+  const cats = []; let cur = null;
+  String(state.bank||"").split("\n").forEach(line=>{
+    const t = line.trim(); if(!t) return;
+    if(t.startsWith("#")){ cur = {t:t.replace(/^#+\s*/,""), p:[]}; cats.push(cur); }
+    else { if(!cur){ cur = {t:"Phrases", p:[]}; cats.push(cur); } cur.p.push(t); }
+  });
+  return cats;
+}
+function viewTechno(b){
+  if(!b.students.length) return emptyState();
+  const cats = parseBank(), list = sorted(b.students,"nom");
+  const done = list.filter(s=>s.appTechno.trim()).length;
+  return `<div class="grid2" style="grid-template-columns:minmax(0,1fr) minmax(0,2fr)">
+    <div class="panel bank"><h2>Banque de phrases</h2>
+      <p class="hint">Cliquez une phrase : elle s’ajoute à l’appréciation sélectionnée. {prenom} est remplacé par le prénom.</p>
+      ${cats.map((c,ci)=>`<div class="bank-cat"><span class="label">${esc(c.t)}</span>${c.p.map((p,pi)=>`<button class="chip" data-act="insert" data-c="${ci}" data-p="${pi}">${esc(p)}</button>`).join("")}</div>`).join("")}
+      <button class="btn small" data-act="view" data-v="data">Modifier la banque</button>
+    </div>
+    <div class="panel"><div class="toolbar" style="justify-content:space-between"><h2>${esc(state.cur.cls)} · ${done} / ${list.length} rédigées</h2>
+      <button class="btn" data-act="copy-all-app">Copier toutes les appréciations</button></div>
+      <div class="gen-bar">
+        <div><b>Rédaction automatique</b><span class="hint">Note de techno + curseur bavardages et distractions de chaque élève.</span></div>
+        <div class="toolbar"><button class="btn primary" data-act="gen-apps">Rédiger les appréciations vides</button>
+          ${askBtn("gen-all","Tout réécrire","Remplacer toutes les appréciations de la "+state.cur.cls+" ?","btn")}</div>
+      </div>
+      <div>${list.map(s=>`<div class="app-row${ui.lastApp===s.id?" active":""}" id="row-${s.id}">
+        <div class="who">${esc(s.nom)} <span>${esc(s.prenom)} · moy. ${fmt(s.moy)}</span>
+          <label class="bav" for="bv-${s.id}"><span class="label">Bavardages, distractions</span>
+            <input type="range" min="0" max="4" step="1" id="bv-${s.id}" data-sfield="bav" data-id="${s.id}" value="${bavOf(s)}" class="lvl-${bavOf(s)}">
+            <span class="bav-val lvl-${bavOf(s)}" id="bl-${s.id}">${BAV_LABELS[bavOf(s)]}</span></label></div>
+        <div><label class="label" for="tn-${s.id}">Note</label><input type="number" step="0.01" min="0" max="20" id="tn-${s.id}" data-sfield="techno" data-id="${s.id}" value="${s.techno??""}" style="width:100%"></div>
+        <div><textarea id="ta-${s.id}" data-sfield="appTechno" data-id="${s.id}" aria-label="Appréciation de ${esc(full(s))}">${esc(s.appTechno)}</textarea>
+          <div class="app-meta"><span id="cc-${s.id}">${s.appTechno.length} caractères</span><span class="toolbar"><button class="btn small" data-act="gen-one" data-id="${s.id}"${s.techno==null?' disabled title="Saisissez d\u2019abord la note"':""}>${s.appTechno.trim()?"Autre version":"Rédiger"}</button><button class="btn small" data-act="copy-app" data-id="${s.id}">Copier</button></span></div></div>
+      </div>`).join("")}</div>
+    </div></div>`;
+}
+
+/* ---------- Générateur d'appréciations techno ---------- */
+const BAV_LABELS = ["Aucun","Ponctuels","Réguliers","Fréquents","Perturbe le cours"];
+const GEN = {
+  res: [
+    [ "Les résultats {deP} sont insuffisants en technologie.",
+      "Trimestre difficile pour {P} : les notions essentielles ne sont pas acquises.",
+      "{P} est en grande difficulté en technologie ce trimestre.",
+      "Les acquis {deP} restent très insuffisants en technologie.",
+      "Résultats préoccupants pour {P} en technologie." ],
+    [ "Les résultats {deP} sont fragiles en technologie.",
+      "Trimestre en demi-teinte pour {P} : plusieurs notions ne sont pas encore acquises.",
+      "{P} rencontre des difficultés sur une partie des notions abordées.",
+      "Résultats un peu justes pour {P}, les bases doivent être consolidées.",
+      "{P} n’a pas encore atteint le niveau attendu en technologie." ],
+    [ "{P} obtient des résultats corrects en technologie.",
+      "Trimestre assez satisfaisant pour {P}, mais les acquis restent à consolider.",
+      "L’essentiel est compris par {P}, mais certaines notions restent fragiles.",
+      "{P} a acquis les bases en technologie et peut encore progresser.",
+      "Ensemble correct pour {P}, avec une marge de progression réelle." ],
+    [ "{P} obtient de bons résultats en technologie.",
+      "Trimestre satisfaisant pour {P} en technologie.",
+      "Les résultats {deP} sont satisfaisants et les bases sont acquises.",
+      "{P} fournit un travail sérieux qui porte ses fruits.",
+      "Bon ensemble pour {P} en technologie ce trimestre." ],
+    [ "{P} obtient de très bons résultats en technologie.",
+      "Très bon trimestre pour {P} : les notions sont bien comprises.",
+      "Les résultats {deP} sont très satisfaisants en technologie.",
+      "{P} fournit un travail de qualité et les acquis sont solides.",
+      "Très bon niveau pour {P}, les compétences sont bien maîtrisées." ],
+    [ "{P} obtient d’excellents résultats en technologie.",
+      "Excellent trimestre pour {P} en technologie.",
+      "Les résultats {deP} sont excellents : les notions sont parfaitement maîtrisées.",
+      "{P} réalise un très beau parcours en technologie, avec des résultats remarquables.",
+      "Très beau travail {deP} ce trimestre, les compétences sont solidement acquises." ]
+  ],
+  comp: [
+    [ "L’attitude en classe est exemplaire.",
+      "Le comportement en classe est irréprochable.",
+      "L’écoute et la concentration sont de qualité.",
+      "Le sérieux en classe est appréciable.",
+      "La participation est constructive et le climat de travail excellent." ],
+    [ "Quelques bavardages sont toutefois à éviter.",
+      "L’attitude est globalement correcte, malgré quelques bavardages.",
+      "La concentration est bonne, même si quelques moments d’inattention apparaissent.",
+      "Le comportement est satisfaisant, quelques distractions ponctuelles mises à part." ],
+    [ "Les bavardages sont trop fréquents.",
+      "La concentration est souvent perturbée par des bavardages.",
+      "Des distractions régulières freinent le travail en classe.",
+      "L’attitude doit devenir plus sérieuse : les bavardages sont réguliers." ],
+    [ "Les bavardages et les distractions nuisent au travail.",
+      "Le manque de concentration et les bavardages répétés pénalisent les apprentissages.",
+      "L’attitude en classe n’est pas satisfaisante : les bavardages sont trop nombreux.",
+      "Les distractions permanentes empêchent un travail efficace." ],
+    [ "Le comportement perturbe le déroulement des cours et n’est pas acceptable.",
+      "Les bavardages incessants gênent la classe : un changement d’attitude est indispensable.",
+      "L’attitude en classe est inacceptable et perturbe le travail du groupe.",
+      "Le comportement en classe est très préoccupant et doit changer rapidement." ]
+  ],
+  tip: {
+    higood: [ "Continuez ainsi.", "Bravo, poursuivez dans cette voie.", "Félicitations pour ce trimestre très réussi.",
+              "C’est très encourageant pour la suite.", "Un ensemble très positif, à poursuivre." ],
+    hibad:  [ "Avec plus de concentration, les résultats pourraient être encore meilleurs.",
+              "Dommage : un meilleur comportement permettrait d’aller encore plus loin.",
+              "Les capacités sont là, il faut maintenant soigner l’attitude.",
+              "Le potentiel est réel, mais l’attitude doit progresser." ],
+    midgood:[ "Il faut poursuivre les efforts pour progresser.", "Un travail plus régulier permettrait d’aller plus loin.",
+              "Les efforts doivent se poursuivre.", "Il faut continuer à s’investir pour consolider les acquis.",
+              "Bon état d’esprit, à poursuivre." ],
+    midbad: [ "Plus de concentration permettrait d’obtenir de meilleurs résultats.", "Il faut gagner en concentration pour progresser.",
+              "Un comportement plus sérieux est nécessaire pour progresser.", "Les résultats progresseront avec une meilleure écoute en classe." ],
+    logood: [ "Il faut persévérer, les efforts finiront par payer.", "Il ne faut pas se décourager et revoir régulièrement les cours.",
+              "Courage, un travail régulier permettra de progresser.", "Il faut maintenant consolider les bases avec méthode.",
+              "Il ne faut pas hésiter à demander de l’aide en cas de difficulté." ],
+    lobad:  [ "Un sursaut est indispensable, en commençant par une meilleure concentration.",
+              "Il faut se mettre au travail sérieusement et cesser les bavardages.",
+              "Un changement d’attitude est nécessaire pour progresser.",
+              "Il faut se ressaisir rapidement, au travail comme en classe." ]
+  }
+};
+function techLevel(n){ return n>=16?5 : n>=14?4 : n>=12?3 : n>=10?2 : n>=8?1 : 0; }
+function bavOf(s){ const v = +s.bav; return isNaN(v) ? 0 : Math.max(0, Math.min(4, Math.round(v))); }
+function nameForms(p){
+  p = String(p||"").trim() || "l’élève";
+  const v = /^[aeiouyhàâäéèêëîïôöùûüÿ]/i.test(p);
+  return { P:p, deP:(v ? "d’" : "de ")+p };
+}
+function genKeys(s){
+  const lv = techLevel(s.techno), bv = bavOf(s);
+  const band = lv>=4 ? "hi" : lv>=2 ? "mid" : "lo";
+  return ["r"+lv, "c"+bv, "t"+band+(bv<=1?"good":"bad")];
+}
+function genPool(k){ return k[0]==="r" ? GEN.res[+k.slice(1)] : k[0]==="c" ? GEN.comp[+k.slice(1)] : GEN.tip[k.slice(1)]; }
+function usageMap(b, except){
+  const used = {};
+  b.students.forEach(x=>{
+    if(x===except || !x.appKeys || !x.appIdx || x.appAuto!==x.appTechno) return;
+    x.appKeys.forEach((k,i)=>{ (used[k] = used[k] || {})[x.appIdx[i]] = ((used[k]||{})[x.appIdx[i]]||0) + 1; });
+  });
+  return used;
+}
+function pickVariant(pool, counts, avoid){
+  let ids = pool.map((_,i)=>i);
+  if(avoid!=null && ids.length>1) ids = ids.filter(i=>i!==avoid);
+  const c = i => (counts && counts[i]) || 0;
+  const min = Math.min(...ids.map(c));
+  const best = ids.filter(i=>c(i)===min);
+  return best[Math.floor(Math.random()*best.length)];
+}
+function generateApp(s, used, other){
+  const keys = genKeys(s), f = nameForms(s.prenom);
+  const sameKeys = other && s.appKeys && s.appKeys.join()===keys.join();
+  const idx = keys.map((k,i)=>pickVariant(genPool(k), used[k], sameKeys ? s.appIdx[i] : null));
+  keys.forEach((k,i)=>{ used[k] = used[k] || {}; used[k][idx[i]] = (used[k][idx[i]]||0) + 1; });
+  const text = keys.map((k,i)=>genPool(k)[idx[i]]).join(" ").replace(/\{P\}/g, f.P).replace(/\{deP\}/g, f.deP);
+  s.appTechno = text; s.appAuto = text; s.appKeys = keys; s.appIdx = idx;
+  return text;
+}
+function generateMany(b, onlyEmpty){
+  const used = usageMap(b, null);
+  let n = 0, miss = 0;
+  sorted(b.students,"nom").forEach(s=>{
+    if(onlyEmpty && s.appTechno.trim()) return;
+    if(s.techno==null){ miss++; return; }
+    if(!onlyEmpty && s.appAuto===s.appTechno && s.appKeys) s.appKeys.forEach((k,i)=>{ if(used[k] && used[k][s.appIdx[i]]) used[k][s.appIdx[i]]--; });
+    generateApp(s, used, false); n++;
+  });
+  return {n, miss};
+}
+function refreshAppRow(s){
+  const ta = document.getElementById("ta-"+s.id); if(ta) ta.value = s.appTechno;
+  const cc = document.getElementById("cc-"+s.id); if(cc) cc.textContent = s.appTechno.length+" caractères";
+}
+
+/* ---------- Synchronisation chiffrée (Firebase REST, sans SDK ni clé API) ---------- */
+const DB_URL = "https://site-edel-default-rtdb.europe-west1.firebasedatabase.app";
+const SYNC_KEY = "conseils-de-classe-sync-v1";
+const SYNC_SALT = "conseils-de-classe-estic|v1";
+const sync = { id:null, key:null, st:"off", msg:"", last:0, busy:false, pending:false, timer:null, conflict:null };
+function b64(buf){ let s = ""; new Uint8Array(buf).forEach(c=>{ s += String.fromCharCode(c); }); return btoa(s); }
+function unb64(str){ return Uint8Array.from(atob(str), c=>c.charCodeAt(0)); }
+function b64u(buf){ return b64(buf).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""); }
+async function deriveSync(pass){
+  const enc = new TextEncoder();
+  const base = await crypto.subtle.importKey("raw", enc.encode(pass), "PBKDF2", false, ["deriveBits"]);
+  const bits = new Uint8Array(await crypto.subtle.deriveBits({name:"PBKDF2", hash:"SHA-256", salt:enc.encode(SYNC_SALT), iterations:600000}, base, 512));
+  return { raw: bits.slice(0,32), id: b64u(bits.slice(32)) };
+}
+function aesKey(raw){ return crypto.subtle.importKey("raw", raw, {name:"AES-GCM"}, false, ["encrypt","decrypt"]); }
+function nodeUrl(){ return DB_URL + "/conseils/" + sync.id + ".json"; }
+async function encryptState(){
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = await crypto.subtle.encrypt({name:"AES-GCM", iv}, sync.key, new TextEncoder().encode(JSON.stringify(state)));
+  return { iv:b64(iv), data:b64(ct), maj: state.maj || Date.now() };
+}
+async function decryptDoc(doc){
+  const pt = await crypto.subtle.decrypt({name:"AES-GCM", iv:unb64(doc.iv)}, sync.key, unb64(doc.data));
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+async function pull(){
+  const r = await fetch(nodeUrl(), {cache:"no-store"});
+  if(!r.ok) throw new Error("http " + r.status);
+  return r.json();
+}
+async function push(){
+  const doc = await encryptState();
+  /* POST + x-http-method-override : requête simple, sans en-tête Content-Type ni pré-vérification CORS */
+  const r = await fetch(nodeUrl() + "?x-http-method-override=PUT", {method:"POST", body:JSON.stringify(doc)});
+  if(!r.ok) throw new Error("http " + r.status);
+  sync.last = Date.now();
+}
+function hhmm(t){ const d = new Date(t); return String(d.getHours()).padStart(2,"0")+"h"+String(d.getMinutes()).padStart(2,"0"); }
+function dateFr(t){ if(!t) return "date inconnue"; const d = new Date(t); return d.toLocaleDateString("fr-FR")+" à "+hhmm(t); }
+function syncErr(e){
+  const m = String(e && e.message || "");
+  if(/http 40[13]/.test(m)) return "Accès refusé par la base : vérifiez les règles Firebase.";
+  if(/http/.test(m)) return "La base a renvoyé une erreur ("+m.replace("http ","")+").";
+  if(e && e.name==="OperationError") return "Déchiffrement impossible : la phrase ne correspond pas à ces données.";
+  return "Base injoignable : pas de connexion, ou page ouverte dans Claude.";
+}
+function setSync(st, msg){
+  sync.st = st; sync.msg = msg || "";
+  const pill = document.getElementById("syncState");
+  if(pill){
+    pill.dataset.st = st;
+    pill.textContent = st==="off" ? "Synchro désactivée" : st==="ok" ? "Synchronisé "+hhmm(sync.last||Date.now()) :
+      st==="run" ? "Synchronisation…" : st==="wait" ? "Synchro : choix à faire" : "Synchro impossible";
+    pill.title = sync.msg || pill.textContent;
+  }
+  const m = document.getElementById("syncMsg"); if(m) m.textContent = syncLine();
+}
+function syncLine(){
+  if(sync.st==="ok") return "Données chiffrées et synchronisées à "+hhmm(sync.last||Date.now())+".";
+  if(sync.st==="run") return sync.msg || "Synchronisation en cours…";
+  if(sync.st==="err") return sync.msg;
+  if(sync.st==="wait") return "Les données de la base et celles de cet appareil diffèrent.";
+  return "";
+}
+function scheduleSync(){
+  if(!sync.id || sync.conflict) return;
+  clearTimeout(sync.timer);
+  setSync("run");
+  sync.timer = setTimeout(doPush, 1500);
+}
+async function doPush(){
+  if(!sync.id) return;
+  if(sync.busy){ sync.pending = true; return; }
+  sync.busy = true;
+  try{ await push(); setSync("ok"); }catch(e){ setSync("err", syncErr(e)); }
+  sync.busy = false;
+  if(sync.pending){ sync.pending = false; doPush(); }
+}
+function hasRealData(){ return Object.values(state.data).some(b=>b && b.students && b.students.length && !b.example); }
+async function applyRemote(doc){
+  try{
+    const s = await decryptDoc(doc);
+    if(!s || s.v!==1 || !s.data) throw new Error("format");
+    state = Object.assign(freshState(), s, {data:s.data});
+    saveLocalOnly(); sync.last = Date.now(); setSync("ok"); render();
+    toast("Données récupérées depuis la base");
+  }catch(e){ setSync("err", e.name==="OperationError" ? syncErr(e) : "Les données de la base sont illisibles."); }
+}
+/* interactive : après saisie de la phrase, on demande en cas de désaccord ; sinon la version la plus récente gagne */
+async function reconcile(interactive){
+  setSync("run", "Lecture de la base…");
+  let doc;
+  try{ doc = await pull(); }catch(e){ setSync("err", syncErr(e)); return; }
+  if(!doc || !doc.data){ await doPush(); if(sync.st==="ok") toast("Données envoyées dans la base"); return; }
+  const lm = state.maj || 0, rm = doc.maj || 0;
+  if(!hasRealData()){ await applyRemote(doc); return; }
+  if(rm===lm){ sync.last = Date.now(); setSync("ok"); return; }
+  if(!interactive){ if(rm>lm) await applyRemote(doc); else await doPush(); return; }
+  sync.conflict = {doc, rm, lm}; setSync("wait"); render();
+}
+async function connectSync(pass, remember){
+  setSync("run", "Préparation de la clé de chiffrement…");
+  try{
+    const d = await deriveSync(pass);
+    sync.id = d.id; sync.key = await aesKey(d.raw);
+    if(remember){ try{ localStorage.setItem(SYNC_KEY, JSON.stringify({id:d.id, k:b64(d.raw)})); }catch(e){} }
+  }catch(e){ sync.id = null; sync.key = null; setSync("err", "Le chiffrement n’est pas disponible dans ce navigateur."); render(); return; }
+  render();
+  await reconcile(true);
+  render();
+}
+function disconnectSync(){
+  try{ localStorage.removeItem(SYNC_KEY); }catch(e){}
+  clearTimeout(sync.timer);
+  Object.assign(sync, {id:null, key:null, conflict:null, last:0}); setSync("off"); render();
+}
+async function initSync(){
+  let saved = null;
+  try{ saved = JSON.parse(localStorage.getItem(SYNC_KEY) || "null"); }catch(e){}
+  if(!saved || !saved.id || !saved.k || !(window.crypto && crypto.subtle)) { setSync("off"); return; }
+  try{ sync.id = saved.id; sync.key = await aesKey(unb64(saved.k)); }catch(e){ sync.id = null; setSync("off"); return; }
+  await reconcile(false);
+}
+function syncPanel(){
+  if(!sync.id) return `<div class="panel"><h2>Synchronisation en ligne</h2>
+      <p class="hint">Retrouvez vos données sur tous vos postes. Elles sont chiffrées dans le navigateur avant l’envoi : la base ne contient rien de lisible. La phrase secrète n’est enregistrée nulle part.</p>
+      <div class="field"><label class="label" for="syncPass">Phrase secrète</label><input type="password" id="syncPass" autocomplete="current-password" placeholder="La même sur chaque appareil"></div>
+      <label class="radio"><input type="checkbox" id="syncRemember" checked> Se souvenir sur cet appareil</label>
+      <div class="toolbar"><button class="btn primary" data-act="sync-connect">Activer la synchronisation</button><span class="hint" id="syncMsg">${esc(syncLine())}</span></div>
+    </div>`;
+  if(sync.conflict){
+    const c = sync.conflict;
+    return `<div class="panel"><h2>Synchronisation en ligne</h2>
+      <p>Les données de la base et celles de cet appareil diffèrent. Lesquelles garder ?</p>
+      <div class="toolbar"><button class="btn primary" data-act="sync-keep-remote">Garder la base (modifiée le ${esc(dateFr(c.rm))})</button>
+        <button class="btn" data-act="sync-keep-local">Garder cet appareil (modifié le ${esc(dateFr(c.lm))})</button></div>
+      <p class="hint">La version écartée est remplacée. Exportez une sauvegarde avant si vous hésitez.</p>
+    </div>`;
+  }
+  return `<div class="panel"><h2>Synchronisation en ligne</h2>
+      <p class="hint" id="syncMsg">${esc(syncLine())}</p>
+      <p class="hint">Chaque modification est chiffrée puis envoyée automatiquement. Sur un autre appareil, activez la synchronisation avec la même phrase.</p>
+      <div class="toolbar"><button class="btn" data-act="sync-now">Synchroniser maintenant</button>${askBtn("sync-off","Désactiver sur cet appareil","Oublier la phrase sur cet appareil ? Les données restent ici et dans la base.","btn")}</div>
+    </div>`;
+}
+
+/* ---------- Données ---------- */
+function viewData(b){
+  const triOpts = (sel) => TRIS.map(t=>`<option value="${t[0]}"${t[0]===sel?" selected":""}>${t[1]}</option>`).join("");
+  const other = TRIS.map(t=>t[0]).filter(t=>t!==state.cur.tri && peek(state.cur.cls,t) && peek(state.cur.cls,t).students.length);
+  return `<div class="grid2">
+    ${syncPanel()}
+    <div class="panel"><h2>Importer une liste</h2>
+      <p class="hint">Récapitulatif des moyennes Pronote (.xlsx) : classe, trimestre, moyennes, rang et matières sont reconnus automatiquement. CSV accepté aussi (colonnes Nom, Prénom, Moyenne, Technologie).</p>
+      <div class="toolbar"><label class="label" for="impCls">Vers</label>
+        <select id="impCls">${CLASSES.map(c=>`<option${c===state.cur.cls?" selected":""}>${c}</option>`).join("")}</select>
+        <select id="impTri" aria-label="Période">${triOpts(state.cur.tri)}</select></div>
+      <input type="file" id="csvFile" accept=".xlsx,.csv,.txt,.tsv" aria-label="Fichier Excel ou CSV">
+      <textarea id="csvPaste" placeholder="ou collez ici les lignes copiées depuis Pronote ou un tableur" aria-label="Coller les données"></textarea>
+      <div class="radio"><label><input type="radio" name="impMode" value="merge" checked> Mettre à jour (garde les appréciations)</label><label><input type="radio" name="impMode" value="replace"> Remplacer la liste</label></div>
+      <div class="toolbar"><button class="btn primary" data-act="import-csv">Importer</button><span class="hint" id="impMsg">${esc(ui.importMsg)}</span></div>
+    </div>
+    <div class="panel"><h2>Reprendre la liste d’une autre période</h2>
+      <p class="hint">Copie les noms des élèves de ${esc(state.cur.cls)} vers le ${esc(triLabel(state.cur.tri))}, sans notes ni décisions.</p>
+      ${other.length?`<div class="toolbar"><select id="fromTri" aria-label="Période source">${other.map(t=>`<option value="${t}">${triLabel(t)}</option>`).join("")}</select><button class="btn" data-act="copy-roster">Reprendre la liste</button></div>`:`<p class="hint">Aucune autre période de ${esc(state.cur.cls)} ne contient d’élèves.</p>`}
+      <h2>Seuils des propositions de mention</h2>
+      <div class="toolbar">
+        <label>Encouragements <input type="number" step="0.5" id="sEnc" data-seuil="enc" value="${state.seuils.enc}" style="width:80px"></label>
+        <label>Compliments <input type="number" step="0.5" id="sComp" data-seuil="comp" value="${state.seuils.comp}" style="width:80px"></label>
+        <label>Félicitations <input type="number" step="0.5" id="sFel" data-seuil="fel" value="${state.seuils.fel}" style="width:80px"></label>
+      </div>
+    </div>
+    <div class="panel"><h2>Sauvegarde</h2>
+      <p class="hint">Les données restent dans ce navigateur, sur cet appareil. Exportez une sauvegarde après chaque conseil pour ne rien perdre ou passer sur un autre ordinateur.</p>
+      <div class="toolbar"><button class="btn primary" data-act="export-dl">Télécharger la sauvegarde</button><button class="btn" data-act="export-copy">Copier la sauvegarde</button></div>
+      <span class="label">Restaurer</span>
+      <input type="file" id="jsonFile" accept=".json,application/json" aria-label="Fichier de sauvegarde">
+      <textarea id="jsonPaste" placeholder="ou collez ici le contenu d’une sauvegarde" aria-label="Coller une sauvegarde"></textarea>
+      <div class="toolbar">${askBtn("restore","Restaurer","Remplacer toutes les données actuelles ?","btn")}</div>
+    </div>
+    <div class="panel"><h2>Banque de phrases</h2>
+      <p class="hint">Une phrase par ligne. Une ligne commençant par # crée une catégorie. {prenom} est remplacé par le prénom de l’élève.</p>
+      <textarea id="bankText" data-field="bank" style="min-height:260px">${esc(state.bank)}</textarea>
+      <h2>Effacer</h2>
+      <div class="toolbar">${askBtn("reset-class","Effacer la "+state.cur.cls+" (3 trimestres)","Effacer toute la "+state.cur.cls+" (les 3 trimestres) ?","btn danger")}${askBtn("reset-book","Vider "+state.cur.cls+" · "+state.cur.tri,"Vider "+state.cur.cls+" pour le "+triLabel(state.cur.tri)+" ?","btn danger")}${askBtn("reset-all","Tout effacer","Effacer toutes les classes et périodes ?","btn danger")}</div>
+    </div>
+  </div>`;
+}
+
+/* ---------- import CSV ---------- */
+function parseCSV(text){
+  text = text.replace(/^﻿/,"");
+  const first = text.split(/\r?\n/).find(l=>l.trim()) || "";
+  const sep = (first.match(/\t/g)||[]).length ? "\t" : ((first.match(/;/g)||[]).length >= (first.match(/,/g)||[]).length ? ";" : ",");
+  const rows = []; let row = [], cell = "", q = false;
+  for(let i=0;i<text.length;i++){
+    const c = text[i];
+    if(q){
+      if(c==='"'){ if(text[i+1]==='"'){ cell+='"'; i++; } else q = false; }
+      else cell += c;
+    } else if(c==='"') q = true;
+    else if(c===sep){ row.push(cell); cell=""; }
+    else if(c==="\n" || c==="\r"){ if(c==="\r" && text[i+1]==="\n") i++; row.push(cell); rows.push(row); row=[]; cell=""; }
+    else cell += c;
+  }
+  row.push(cell); rows.push(row);
+  return rows.map(r=>r.map(x=>x.trim())).filter(r=>r.some(x=>x!==""));
+}
+function splitEleve(v){
+  const parts = v.trim().split(/\s+/); const nom = [], pre = [];
+  parts.forEach(p => (pre.length===0 && p===p.toUpperCase() && /[A-Z]/i.test(norm(p))) ? nom.push(p) : pre.push(p));
+  if(!nom.length) return {nom:parts[0]||"", prenom:parts.slice(1).join(" ")};
+  if(!pre.length && nom.length>1) pre.push(nom.pop());
+  return {nom:nom.join(" "), prenom:pre.join(" ")};
+}
+const NAME_RE = /^[A-ZÀ-ÖØ-Þ][A-ZÀ-ÖØ-Þ'’ -]*\s+\S/;
+const STOP_RE = /^(moyenne|note |notes|%|edite|service de notation|groupes|coefficients|total|effectif|min|max)/;
+function prettySubject(h){
+  h = String(h).trim();
+  const k = norm(h); if(SUBJ_NAMES[k]) return SUBJ_NAMES[k];
+  return h===h.toUpperCase() ? h.charAt(0)+h.slice(1).toLowerCase() : h;
+}
+function rowsToStudents(rows){
+  rows = rows.map(r=>Array.from(r||[], x=>x==null?"":String(x).trim()));
+  if(!rows.length) return [];
+  let hi = rows.slice(0,15).findIndex(r=>r.some(c=>{ const h = norm(c); return h.startsWith("moy") || h==="nom" || h.includes("prenom") || h.includes("eleve"); }));
+  const hasHeader = hi>=0;
+  const H = hasHeader ? rows[hi].map(norm) : [];
+  const find = f => H.findIndex(f);
+  let iNom = find(h=>h==="nom" || (h.startsWith("nom") && !h.includes("prenom"))),
+      iPre = find(h=>h.includes("prenom")),
+      iEl  = find(h=>h.includes("eleve") && !h.includes("\n")),
+      iMoy = find(h=>h.startsWith("moy") && (h.includes("gen") || h==="moyenne" || h==="moyennes")),
+      iTec = find(h=>h.startsWith("techno") || h==="tech"),
+      iRang = find(h=>h.startsWith("rang"));
+  if(iMoy<0) iMoy = find(h=>h.startsWith("moy"));
+  let data = hasHeader ? rows.slice(hi+1) : rows;
+  if(!hasHeader){ iNom = 0; iPre = 1; iMoy = 2; }
+  if(hasHeader && iNom<0 && iEl<0){
+    let best = -1, bestN = 0;
+    const w = Math.max(...data.map(r=>r.length), 0);
+    for(let c=0;c<w;c++){ const n = data.filter(r=>NAME_RE.test(r[c]||"")).length; if(n>bestN){ bestN = n; best = c; } }
+    iEl = best;
+  }
+  const isStudent = r => {
+    const v = iNom>=0 ? r[iNom] : iEl>=0 ? r[iEl] : "";
+    return !!v && !STOP_RE.test(norm(v));
+  };
+  data = data.filter(isStudent);
+  const used = new Set([iNom,iPre,iEl,iMoy,iTec,iRang].filter(i=>i>=0));
+  const matCols = hasHeader ? rows[hi].map((h,i)=>[h,i]).filter(([h,i])=>{
+    const n = norm(h);
+    return !used.has(i) && n && !n.startsWith("redoubl") && !n.includes("\n") && data.some(r=>parseNum(r[i])!=null);
+  }) : [];
+  const out = data.map(r=>{
+    let nom = "", prenom = "";
+    if(iNom>=0 && r[iNom]) { nom = r[iNom]; prenom = iPre>=0 ? (r[iPre]||"") : ""; if(iPre<0 && nom.includes(" ")){ const s = splitEleve(nom); nom = s.nom; prenom = s.prenom; } }
+    else if(iEl>=0 && r[iEl]) { const s = splitEleve(r[iEl]); nom = s.nom; prenom = s.prenom; }
+    if(!nom && !prenom) return null;
+    const mat = {}; matCols.forEach(([h,i])=>{ const n = parseNum(r[i]); if(n!=null) mat[prettySubject(h)] = n; });
+    return newStudent({nom:nom.toUpperCase(), prenom, moy:iMoy>=0?parseNum(r[iMoy]):null, techno:iTec>=0?parseNum(r[iTec]):null, rang:iRang>=0?parseNum(r[iRang]):null, mat});
+  }).filter(Boolean);
+  out.subjects = hasHeader ? rows[hi].map((h,i)=>[h,i]).filter(([h,i])=>{
+    const n = norm(h);
+    return !used.has(i) && n && !n.includes("\n") && !n.startsWith("redoubl") && (SUBJ_NAMES[n] || matCols.some(m=>m[1]===i));
+  }).map(([h])=>prettySubject(h)).filter((v,i,a)=>a.indexOf(v)===i) : [];
+  return out;
+}
+/* Pronote : « 5D - CINQUIEME D / 1er Trimestre » dans les premières lignes */
+function detectMeta(rows){
+  const txt = rows.slice(0,6).map(r=>Array.from(r||[]).join(" ")).join("\n");
+  const m = txt.match(/(?:^|\n|\s)(\d(?:PM|[A-Z]))\s*-\s/);
+  const t = txt.match(/([123])\s*(?:er|e|ème|eme)\s+trimestre/i);
+  return { cls: m && CLASSES.includes(m[1]) ? m[1] : null, tri: t ? "T"+t[1] : null };
+}
+
+/* ---------- lecture .xlsx sans bibliothèque (zip + XML) ---------- */
+async function inflateRaw(bytes){
+  const ds = new DecompressionStream("deflate-raw");
+  const out = new Response(new Blob([bytes]).stream().pipeThrough(ds));
+  return new Uint8Array(await out.arrayBuffer());
+}
+async function unzip(buf){
+  const u8 = new Uint8Array(buf), dv = new DataView(buf), files = {};
+  let e = u8.length - 22;
+  while(e >= 0 && dv.getUint32(e,true)!==0x06054b50) e--;
+  if(e < 0) throw new Error("zip");
+  let p = dv.getUint32(e+16,true); const n = dv.getUint16(e+10,true);
+  const dec = new TextDecoder();
+  for(let i=0;i<n;i++){
+    const method = dv.getUint16(p+10,true), csize = dv.getUint32(p+20,true);
+    const nl = dv.getUint16(p+28,true), xl = dv.getUint16(p+30,true), cl = dv.getUint16(p+32,true), lo = dv.getUint32(p+42,true);
+    const name = dec.decode(u8.subarray(p+46, p+46+nl));
+    files[name] = {method, csize, lo};
+    p += 46+nl+xl+cl;
+  }
+  return async name => {
+    const f = files[name]; if(!f) return null;
+    const start = f.lo + 30 + dv.getUint16(f.lo+26,true) + dv.getUint16(f.lo+28,true);
+    const raw = u8.subarray(start, start+f.csize);
+    return dec.decode(f.method===0 ? raw : await inflateRaw(raw));
+  };
+}
+function colIndex(ref){
+  const L = ref.replace(/\d+/g,""); let n = 0;
+  for(const ch of L) n = n*26 + (ch.charCodeAt(0)-64);
+  return n-1;
+}
+async function readXlsx(buf){
+  const get = await unzip(buf);
+  const P = new DOMParser();
+  const tx = el => Array.from(el.getElementsByTagName("t")).map(t=>t.textContent).join("");
+  const ssx = await get("xl/sharedStrings.xml");
+  const shared = ssx ? Array.from(P.parseFromString(ssx,"application/xml").getElementsByTagName("si")).map(tx) : [];
+  let sheetPath = "xl/worksheets/sheet1.xml";
+  const wb = await get("xl/workbook.xml"), rels = await get("xl/_rels/workbook.xml.rels");
+  if(wb && rels){
+    const s0 = P.parseFromString(wb,"application/xml").getElementsByTagName("sheet")[0];
+    const rid = s0 && (s0.getAttribute("r:id") || s0.getAttributeNS("http://schemas.openxmlformats.org/officeDocument/2006/relationships","id"));
+    const rel = Array.from(P.parseFromString(rels,"application/xml").getElementsByTagName("Relationship")).find(r=>r.getAttribute("Id")===rid);
+    if(rel){ const t = rel.getAttribute("Target"); sheetPath = t.startsWith("/") ? t.slice(1) : "xl/"+t; }
+  }
+  const sx = await get(sheetPath);
+  if(!sx) throw new Error("sheet");
+  const rows = [];
+  Array.from(P.parseFromString(sx,"application/xml").getElementsByTagName("row")).forEach(rw=>{
+    const ri = (+rw.getAttribute("r") || rows.length+1) - 1, row = [];
+    Array.from(rw.getElementsByTagName("c")).forEach(c=>{
+      const t = c.getAttribute("t"), v = c.getElementsByTagName("v")[0];
+      let val = "";
+      if(t==="s") val = v ? (shared[+v.textContent] || "") : "";
+      else if(t==="inlineStr") val = tx(c);
+      else val = v ? v.textContent : "";
+      row[colIndex(c.getAttribute("r")||"A")] = val;
+    });
+    rows[ri] = row;
+  });
+  return Array.from(rows, r=>r||[]);
+}
+
+function doImport(text){ doImportRows(parseCSV(text)); }
+function doImportRows(rows, meta){
+  if(meta && meta.cls){ document.getElementById("impCls").value = meta.cls; }
+  if(meta && meta.tri){ document.getElementById("impTri").value = meta.tri; }
+  const cls = document.getElementById("impCls").value, tri = document.getElementById("impTri").value;
+  const mode = (document.querySelector('input[name="impMode"]:checked')||{}).value || "merge";
+  const list = rowsToStudents(rows);
+  if(!list.length){ ui.importMsg = "Aucun élève reconnu. Vérifiez la ligne d’en-tête (Nom, Prénom, Moyenne)."; render(); return; }
+  const b = book(cls,tri);
+  if(b.example){ b.students = []; b.example = false; b.bilan = ""; }
+  let added = 0, updated = 0;
+  if(mode==="replace"){ b.students = list; added = list.length; }
+  else {
+    const idx = new Map(b.students.map(s=>[norm(full(s)), s]));
+    list.forEach(n=>{
+      const o = idx.get(norm(full(n)));
+      if(o){ if(n.moy!=null) o.moy = n.moy; if(n.rang!=null) o.rang = n.rang; if(n.techno!=null) o.techno = n.techno; if(Object.keys(n.mat).length) o.mat = n.mat; updated++; }
+      else { b.students.push(n); added++; }
+    });
+  }
+  if(list.subjects && list.subjects.length)b.subjects = list.subjects;
+  state.cur.cls = cls; state.cur.tri = tri;
+  ui.importMsg = `${cls} · ${tri} : ${added} ajouté${added>1?"s":""}, ${updated} mis à jour.`;
+  save(); render(); toast(ui.importMsg);
+}
+
+/* ---------- actions ---------- */
+function setMention(s, k){ s.mention = k; }
+function act(el){
+  const a = el.dataset.act, id = el.dataset.id;
+  const b = book();
+  switch(a){
+    case "view": state.cur.view = el.dataset.v; ui.ask = null; save(); render(); try{ window.scrollTo(0,0); }catch(e){} break;
+    case "mention": { const s = findStudent(id); if(s){ setMention(s, el.dataset.k); save(); render(); } break; }
+    case "garde": { const s = findStudent(id); if(s){ s.garde[el.dataset.k] = !s.garde[el.dataset.k]; save(); render(); } break; }
+    case "toggle-open": ui.open = ui.open===id ? null : id; render(); break;
+    case "add-student": {
+      if(b.example){ b.students = []; b.example = false; b.bilan = ""; }
+      const s = newStudent({nom:"NOUVEL", prenom:"Élève"}); b.students.push(s);
+      state.cur.view = "prep"; ui.open = s.id; ui.q = ""; save(); render();
+      const f = document.getElementById("nm-"+s.id); if(f){ f.focus(); f.select(); }
+      break; }
+    case "propose": {
+      const t = state.seuils; let n = 0;
+      b.students.forEach(s=>{
+        if(s.mention || s.garde.travail || s.garde.comportement || s.moy==null) return;
+        const k = s.moy>=t.fel ? "fel" : s.moy>=t.comp ? "comp" : s.moy>=t.enc ? "enc" : "";
+        if(k){ s.mention = k; n++; }
+      });
+      save(); render(); toast(n ? `${n} mention${n>1?"s":""} proposée${n>1?"s":""}` : "Aucune nouvelle proposition"); break; }
+    case "goto": ui.idx = +el.dataset.i; render(); break;
+    case "prev": ui.idx--; render(); break;
+    case "next-vu": {
+      const list = sorted(b.students,"nom"); const s = list[ui.idx];
+      if(s) s.vu = true;
+      if(ui.idx < list.length-1) ui.idx++; else toast("Tous les élèves sont passés");
+      save(); render(); break; }
+    case "timer":
+      if(ui.timer.run){ ui.timer.acc += Date.now()-ui.timer.t0; ui.timer.run = false; }
+      else { ui.timer.t0 = Date.now(); ui.timer.run = true; }
+      render(); break;
+    case "timer-reset": ui.timer = {run:false, t0:0, acc:0}; render(); break;
+    case "add-prof": ensureProfs(b); b.profs.push({id:uid(), matiere:"Nouvelle matière", prof:"", bilan:""}); save(); render(); break;
+    case "ai-bilan": aiBilan(); break;
+    case "task": {
+      const bb = state.data[el.dataset.bk]; if(!bb) break;
+      const s = bb.students.find(x=>x.id===id); if(!s) break;
+      const k = norm(el.dataset.t); s.doneTasks = s.doneTasks || [];
+      if(el.checked){ if(!s.doneTasks.includes(k)) s.doneTasks.push(k); } else s.doneTasks = s.doneTasks.filter(x=>x!==k);
+      save(); render(); break; }
+    case "quick": {
+      const s = findStudent(id); if(!s) break;
+      const q = QUICK[+el.dataset.q];
+      if(!tasksOf(s).some(x=>x.t===q)) s.notes = (s.notes.trim() ? s.notes.replace(/\s+$/,"")+"\n" : "") + q;
+      save(); render(); break; }
+    case "act-scope": ui.actScope = el.dataset.v; render(); break;
+    case "act-show": ui.actShow = el.dataset.v; render(); break;
+    case "copy-actions": copyText(actionsText(), "Liste des actions"); break;
+    case "gen-bilan": b.bilanBy = ""; b.bilanAuto = true; b.bilan = summarizeBilans(b); save(); render(); toast("Résumé recalculé"); break;
+    case "cr-copy": copyText(crText(b), "Compte-rendu"); break;
+    case "cr-dl": download(`conseil-${state.cur.cls}-${state.cur.tri}.txt`, crText(b)); break;
+    case "tsv-copy": copyText(tsv(b), "Tableau récapitulatif"); break;
+    case "insert": {
+      const cat = parseBank()[+el.dataset.c]; if(!cat) break;
+      const s = findStudent(ui.lastApp);
+      if(!s){ toast("Cliquez d’abord dans une appréciation"); break; }
+      const phrase = cat.p[+el.dataset.p].replace(/\{prenom\}/gi, s.prenom);
+      s.appTechno = (s.appTechno.trim() ? s.appTechno.trim()+" " : "") + phrase;
+      const ta = document.getElementById("ta-"+s.id);
+      if(ta){ ta.value = s.appTechno; ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
+      const cc = document.getElementById("cc-"+s.id); if(cc) cc.textContent = s.appTechno.length+" caractères";
+      save(); break; }
+    case "sync-connect": {
+      const f = document.getElementById("syncPass"), pass = f ? f.value : "";
+      if(pass.length < 8){ setSync("err", "La phrase doit faire au moins 8 caractères."); break; }
+      const rem = !!(document.getElementById("syncRemember")||{}).checked;
+      if(f) f.value = "";
+      connectSync(pass, rem); break; }
+    case "sync-now": reconcile(false); break;
+    case "sync-keep-remote": { const c = sync.conflict; sync.conflict = null; if(c) applyRemote(c.doc).then(render); break; }
+    case "sync-keep-local": sync.conflict = null; render(); doPush(); break;
+    case "gen-apps": {
+      const r = generateMany(b, true); save(); render();
+      toast(r.n ? `${r.n} appréciation${r.n>1?"s":""} rédigée${r.n>1?"s":""}${r.miss?`, ${r.miss} sans note de techno`:""}` : (r.miss ? `${r.miss} élève${r.miss>1?"s":""} sans note de techno` : "Toutes les appréciations sont déjà rédigées"));
+      break; }
+    case "gen-one": {
+      const s = findStudent(id); if(!s || s.techno==null) break;
+      generateApp(s, usageMap(b, s), true); refreshAppRow(s);
+      el.textContent = "Autre version"; ui.lastApp = s.id; save(); break; }
+    case "copy-app": { const s = findStudent(id); if(s) copyText(s.appTechno, "Appréciation de "+full(s)); break; }
+    case "copy-all-app": copyText(sorted(b.students,"nom").map(s=>`${s.nom}\t${s.prenom}\t${fmt(s.techno)}\t${s.appTechno.replace(/[\t\r\n]+/g," ")}`).join("\n"), "Appréciations techno"); break;
+    case "import-csv": {
+      const f = document.getElementById("csvFile").files[0], p = document.getElementById("csvPaste").value;
+      if(p.trim()) doImport(p);
+      else if(f && /\.xlsx$/i.test(f.name)){
+        f.arrayBuffer().then(readXlsx).then(rows=>doImportRows(rows, detectMeta(rows)))
+          .catch(()=>{ ui.importMsg = "Lecture du fichier Excel impossible. Enregistrez-le en CSV puis réessayez."; render(); });
+      }
+      else if(f){ const r = new FileReader(); r.onload = () => doImport(String(r.result)); r.readAsText(f); }
+      else toast("Choisissez un fichier ou collez des lignes");
+      break; }
+    case "copy-roster": {
+      const from = peek(state.cur.cls, document.getElementById("fromTri").value); if(!from) break;
+      if(b.example){ b.students = []; b.example = false; b.bilan = ""; }
+      const have = new Set(b.students.map(s=>norm(full(s)))); let n = 0;
+      from.students.forEach(s=>{ if(!have.has(norm(full(s)))){ b.students.push(newStudent({nom:s.nom, prenom:s.prenom})); n++; } });
+      save(); render(); toast(`${n} élève${n>1?"s":""} repris`); break; }
+    case "export-dl": download(`conseils-de-classe-${new Date().toISOString().slice(0,10)}.json`, JSON.stringify(state,null,1), "application/json"); break;
+    case "export-copy": copyText(JSON.stringify(state), "Sauvegarde"); break;
+    case "ask": ui.ask = el.dataset.what; render(); break;
+    case "cancel-ask": ui.ask = null; render(); break;
+    case "do": doConfirmed(el.dataset.what); break;
+    case "close-modal": document.getElementById("modal").hidden = true; break;
+  }
+}
+function doConfirmed(what){
+  ui.ask = null;
+  const k = key(state.cur.cls, state.cur.tri);
+  if(what==="clear-example" || what==="reset-book"){ state.data[k] = emptyBook(); toast("Liste vidée"); }
+  else if(what==="reset-class"){
+    TRIS.forEach(t=>{ delete state.data[key(state.cur.cls,t[0])]; });
+    ui.open = null; ui.idx = 0; toast("La "+state.cur.cls+" est effacée");
+  }
+  else if(what==="reset-all"){ state.data = {}; toast("Toutes les données sont effacées"); }
+  else if(what==="sync-off"){ disconnectSync(); return; }
+  else if(what==="gen-all"){ const r = generateMany(book(), false); toast(`${r.n} appréciation${r.n>1?"s":""} rédigée${r.n>1?"s":""}${r.miss?`, ${r.miss} sans note de techno`:""}`); }
+  else if(what.startsWith("delprof:")){ const b = book(); b.profs = (b.profs||[]).filter(p=>p.id!==what.slice(8)); refreshBilan(); }
+  else if(what.startsWith("del:")){ const b = book(); b.students = b.students.filter(s=>s.id!==what.slice(4)); ui.open = null; }
+  else if(what==="restore"){
+    const p = document.getElementById("jsonPaste").value, f = document.getElementById("jsonFile").files[0];
+    const apply = txt => {
+      try{
+        const s = JSON.parse(txt);
+        if(!s || s.v!==1 || !s.data) throw 0;
+        state = Object.assign(freshState(), s, {data:s.data}); save(); render(); toast("Sauvegarde restaurée");
+      }catch(e){ toast("Ce fichier n’est pas une sauvegarde de cette appli"); render(); }
+    };
+    if(p.trim()) apply(p);
+    else if(f){ const r = new FileReader(); r.onload = () => apply(String(r.result)); r.readAsText(f); }
+    else { toast("Choisissez un fichier ou collez une sauvegarde"); render(); }
+    return;
+  }
+  save(); render();
+}
+
+/* ---------- événements ---------- */
+document.addEventListener("click", e=>{
+  const el = e.target.closest("[data-act]");
+  if(el && !el.disabled){ if(el.type!=="checkbox") e.preventDefault(); act(el); return; }
+  if(e.target.id==="modal") document.getElementById("modal").hidden = true;
+});
+document.addEventListener("input", e=>{
+  const t = e.target;
+  if(t.dataset.sfield){
+    const s = findStudent(t.dataset.id); if(!s) return;
+    const f = t.dataset.sfield;
+    s[f] = (f==="moy" || f==="techno" || f==="bav") ? parseNum(t.value) : (f==="nom" ? t.value.toUpperCase() : t.value);
+    if(f==="bav"){
+      const v = bavOf(s), bl = document.getElementById("bl-"+s.id);
+      if(bl){ bl.textContent = BAV_LABELS[v]; bl.className = "bav-val lvl-"+v; }
+      t.className = "lvl-"+v;
+    }
+    if(f==="appTechno"){ const cc = document.getElementById("cc-"+s.id); if(cc) cc.textContent = t.value.length+" caractères"; }
+    if(f==="notes"){
+      const tl = document.getElementById("tasks-"+s.id); if(tl) tl.innerHTML = taskItems(s, key(state.cur.cls,state.cur.tri));
+      const nl = document.getElementById("ns-"+s.id); if(nl) nl.innerHTML = noteLine(s);
+      const n = pendingCount(book()), bd = document.getElementById("pendBadge");
+      if(bd) bd.textContent = n; else if(n) renderHeader();
+    }
+    save(); return;
+  }
+  if(t.dataset.pfield){
+    const b = book(), p = (b.profs||[]).find(x=>x.id===t.dataset.pid); if(!p) return;
+    p[t.dataset.pfield] = t.value;
+    refreshBilan();
+    const pre = document.getElementById("crText"); if(pre) pre.textContent = crText(b);
+    save(); return;
+  }
+  if(t.dataset.bfield){
+    if(t.dataset.bfield==="bilan"){ book().bilanAuto = false; book().bilanBy = ""; const m = document.getElementById("bilanMode"); if(m) m.textContent = "Modifié à la main"; }
+    book()[t.dataset.bfield] = t.value;
+    const pre = document.getElementById("crText"); if(pre) pre.textContent = crText(book());
+    save(); return;
+  }
+  if(t.dataset.seuil){ const n = parseNum(t.value); if(n!=null){ state.seuils[t.dataset.seuil] = n; save(); } return; }
+  if(t.dataset.field==="q"){ ui.q = t.value; const tb = document.getElementById("prepRows"); if(tb) tb.innerHTML = prepRows(book()); return; }
+  if(t.dataset.field==="bank"){ state.bank = t.value; save(); return; }
+});
+document.addEventListener("change", e=>{
+  const t = e.target;
+  if(t.dataset.field==="cls"){ state.cur.cls = t.value; ui.idx = 0; ui.open = null; ui.ask = null; save(); render(); }
+  else if(t.dataset.field==="tri"){ state.cur.tri = t.value; ui.idx = 0; ui.open = null; ui.ask = null; save(); render(); }
+  else if(t.dataset.field==="sort"){ ui.sort = t.value; const tb = document.getElementById("prepRows"); if(tb) tb.innerHTML = prepRows(book()); }
+  else if(t.dataset.sfield==="bav" || t.dataset.sfield==="techno"){
+    /* une appréciation rédigée automatiquement et non retouchée suit le curseur et la note */
+    const s = findStudent(t.dataset.id);
+    if(s && s.techno!=null && s.appKeys && s.appAuto===s.appTechno && s.appKeys.join()!==genKeys(s).join()){
+      generateApp(s, usageMap(book(), s), false); refreshAppRow(s); save();
+    }
+  }
+});
+document.addEventListener("focusin", e=>{
+  const t = e.target;
+  if(t.dataset && t.dataset.sfield==="appTechno"){
+    ui.lastApp = t.dataset.id;
+    document.querySelectorAll(".app-row.active").forEach(r=>r.classList.remove("active"));
+    const r = document.getElementById("row-"+t.dataset.id); if(r) r.classList.add("active");
+  }
+});
+document.addEventListener("keydown", e=>{
+  if(e.key==="Enter" && e.target && e.target.id==="syncPass"){ e.preventDefault(); const b = document.querySelector('[data-act="sync-connect"]'); if(b) act(b); return; }
+  if(e.key==="Escape" && !document.getElementById("modal").hidden){ document.getElementById("modal").hidden = true; return; }
+  if(state.cur.view!=="live") return;
+  const tag = (document.activeElement && document.activeElement.tagName) || "";
+  if(tag==="TEXTAREA" || tag==="INPUT" || tag==="SELECT") return;
+  const n = book().students.length;
+  if(e.key==="ArrowRight" && ui.idx < n-1){ ui.idx++; render(); }
+  else if(e.key==="ArrowLeft" && ui.idx > 0){ ui.idx--; render(); }
+});
+
+render();
+initSync();
+</script>
